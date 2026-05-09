@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Niryo Studio - Robotic Control</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#00497d",
+                        "on-surface-variant": "#404752",
+                        "on-primary-fixed": "#001d36",
+                        "secondary-container": "#ff9800",
+                        "tertiary-fixed-dim": "#b4cad6",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#9ecaff",
+                        "surface-container": "#eceeef",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "on-surface": "#191c1d",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-tertiary-fixed-variant": "#354a53",
+                        "primary-fixed-dim": "#9ecaff",
+                        "outline": "#707883",
+                        "on-primary-container": "#002c4f",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "on-secondary-container": "#653900",
+                        "surface": "#f8fafb",
+                        "on-tertiary-container": "#182d36",
+                        "secondary-fixed-dim": "#ffb870",
+                        "tertiary-container": "#7f95a0",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#ffdcbe",
+                        "primary": "#0061a4",
+                        "surface-bright": "#f8fafb",
+                        "secondary": "#8b5000",
+                        "tertiary": "#4c616c",
+                        "on-secondary-fixed": "#2c1600",
+                        "surface-dim": "#d8dadb",
+                        "inverse-on-surface": "#eff1f2",
+                        "on-tertiary-fixed": "#071e27",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-fixed": "#cfe6f2",
+                        "on-background": "#191c1d",
+                        "surface-tint": "#0061a4",
+                        "surface-container-high": "#e6e8e9",
+                        "on-error": "#ffffff",
+                        "primary-container": "#2196f3",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#bfc7d4",
+                        "background": "#f8fafb",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#d1e4ff",
+                        "surface-container-low": "#f2f4f5"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafb;
+        }
+
+        h1,
+        h2,
+        h3,
+        .font-headline {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+    <!-- TopAppBar -->
+    <header
+        class="bg-white dark:bg-slate-900 w-full top-0 border-b-0 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center px-6 h-16 w-full z-50">
+        <div class="flex items-center gap-4">
+            <span class="text-lg font-bold text-slate-900 dark:text-slate-50 tracking-tight">Logo UPV</span>
+            <div class="h-4 w-[1px] bg-outline-variant/30 ml-2"></div>
+            <span class="font-['Plus_Jakarta_Sans'] font-semibold text-sm text-slate-500">nombre de la app</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-4">
+                <span
+                    class="material-symbols-outlined text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded-lg cursor-pointer"
+                    data-icon="circle">circle</span>
+                <span
+                    class="material-symbols-outlined text-blue-600 dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded-lg cursor-pointer"
+                    data-icon="wifi">wifi</span>
+                <span
+                    class="material-symbols-outlined text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded-lg cursor-pointer"
+                    data-icon="settings">settings</span>
+            </div>
+            <div
+                class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+                <img alt="User Profile" class="w-full h-full object-cover"
+                    data-alt="Close up of a professional user avatar"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN81mZEbUQaFLl6sP0j8pZnJNqasMapWPbu6nQnZ_hBwGmW8Vu7fqdGVeq9RU5_HzdaQaU1YDqjFLlzzIwKmcJyGuwMsOyPnMQR9vVY8ZnG6ccxEEob_cu0q3LnHi__-1sH_W_lSR0RJg77QogsFse7sLtTUSbZQmIPeeOZOyjOKJqnRsXyCBqtZ7OZvia3x7nbO2u2aatYsqD_Yugvxj611ndPhpwjhsxje3iBYe_IPZrn_SF5XvQ6c2TGM2tucFAxM37WljP_Yw" />
+            </div>
+        </div>
+    </header>
+    <div class="min-h-screen flex flex-1 overflow-hidden">
+        <!-- SideNavBar -->
+        <aside
+            class="bg-slate-50 dark:bg-slate-900 w-64 left-0 border-r-0 flex flex-col min-h-screen py-4 space-y-2 shrink-0">
+            <div class="px-6 py-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary"
+                            data-icon="precision_manufacturing">precision_manufacturing</span>
+                    </div>
+                    <div>
+                        <p class="font-headline text-xs font-bold uppercase tracking-wider text-on-surface">Username</p>
+                        <p class="text-[10px] text-primary font-medium">puede ser el id</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 px-3 space-y-1">
+                <!-- Active Tab: Control -->
+                <a id="homeBtn"
+                    class="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all font-['Inter'] text-xs font-medium uppercase tracking-wider"
+                    href="javascript:void(0)">
+                    <span class="material-symbols-outlined" data-icon="home">home</span>
+                    <span>Home</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-3 rounded-lg text-blue-600 dark:text-blue-400 border-r-2 border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-800 transition-all font-['Inter'] text-xs font-medium uppercase tracking-wider"
+                    href="#">
+                    <span class="material-symbols-outlined"
+                        data-icon="precision_manufacturing">precision_manufacturing</span>
+                    <span>Control</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all font-['Inter'] text-xs font-medium uppercase tracking-wider"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="tune">tune</span>
+                    <span>Settings</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3" href="#">
+                    <button type="button" id="btn-desconectar"
+                        class="bg-gradient-to-br from-primary to-primary-container text-white rounded-md py-2 px-2 shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">Disconnect
+                        from DB</button>
+                </a>
+            </nav>
+            <div class="mt-auto px-3 py-4 border-t border-slate-100 dark:border-slate-800 space-y-1">
+                <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-600 transition-all text-xs font-medium uppercase tracking-wider"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="help">help</span>
+                    <span>Help</span>
+                </a>
+                <a id="btn-logs"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-600 transition-all text-xs font-medium uppercase tracking-wider"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+                    <span>Logs</span>
+                </a>
+            </div>
+        </aside>
+        <!-- Main Content Canvas -->
+        <main class="flex-1 overflow-y-auto bg-surface p-8">
+            <div class="max-w-7xl mx-auto space-y-8">
+                <!-- Bento Grid Layout -->
+                <div class="grid grid-cols-12 gap-6">
+                    <!-- 3D Viewport / Visualizer -->
+                    <div
+                        class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl overflow-hidden relative min-h-[500px] flex items-center justify-center group shadow-sm border border-outline-variant/5">
+                        <div class="absolute top-6 right-6 z-10 flex flex-col gap-2">
+                            <button
+                                class="w-12 h-12 rounded-full bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl flex items-center justify-center text-on-surface hover:bg-white transition-colors">
+                                <span class="material-symbols-outlined" data-icon="zoom_in">zoom_in</span>
+                            </button>
+                            <button
+                                class="w-12 h-12 rounded-full bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl flex items-center justify-center text-on-surface hover:bg-white transition-colors">
+                                <span class="material-symbols-outlined" data-icon="refresh">refresh</span>
+                            </button>
+                            <button
+                                class="w-12 h-12 rounded-full bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl flex items-center justify-center text-on-surface hover:bg-white transition-colors">
+                                <span class="material-symbols-outlined" data-icon="videocam">videocam</span>
+                            </button>
+                        </div>
+                        <div
+                            class="absolute top-6 left-6 bg-white/70 backdrop-blur-xl px-4 py-2 rounded-full flex items-center gap-2 border border-white/40 shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface">Live
+                                Viewport</span>
+                        </div>
+                        <!-- Robot Arm Placeholder Image -->
+                        <img alt="Robot Niryo Ned 2"
+                            class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-1000"
+                            data-alt="Robot Niryo" src="https://www.robotlab.com/hubfs/Ned.png" />
+                        <!-- HUD Controls (Glassmorphism) -->
+                        <div class="absolute bottom-6 right-6 flex gap-2">
+                            <div
+                                class="bg-white/70 backdrop-blur-xl px-4 py-2 rounded-lg border border-white/40 shadow-sm max-w-[250px]">
+                                <p class="text-[18px] text-on-surface-variant font-medium">Status</p>
+                                <div class="text-sm font-headline font-bold text-primary break-words" id="status">
+                                    Esperando acción...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Main Panel Section -->
+                    <div class="col-span-12 lg:col-span-4 space-y-6">
+                        <div class="bg-surface-container-low rounded-2xl p-8">
+                            <div class="flex items-center justify-between mb-8">
+                                <!-- Robot Control Section -->
+                                <div>
+                                    <h2 class="text-4xl font-headline font-bold text-on-surface tracking-tight">Main
+                                        Panel</h2>
+                                    <br />
+                                    <h2 class="text-2xl font-bold">Robot Control</h2>
+                                </div>
+                                <div class="flex gap-2">
+                                    <!--<span class="px-3 py-1 rounded-full bg-secondary-container/20 text-secondary text-[10px] font-bold uppercase">Manual Mode</span>
+            <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase">Vacuum Off</span>-->
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Start Button -->
+                                <button id="startBtn"
+                                    class="group bg-gradient-to-br from-primary to-primary-container text-white p-6 rounded-xl flex flex-col items-center justify-center gap-4 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                                    <div
+                                        class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                                        <span class="material-symbols-outlined text-3xl" data-icon="play_arrow"
+                                            style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                                    </div>
+                                    <span class="font-headline font-bold text-lg">Start</span>
+                                </button>
+                                <!-- Stop Button -->
+                                <button id="stopBtn"
+                                    class="group bg-secondary-container text-on-secondary-container p-6 rounded-xl flex flex-col items-center justify-center gap-4 shadow-lg shadow-secondary-container/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                                    <div
+                                        class="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center group-hover:bg-white/40 transition-colors">
+                                        <span class="material-symbols-outlined text-3xl" data-icon="stop"
+                                            style="font-variation-settings: 'FILL' 1;">stop</span>
+                                    </div>
+                                    <span class="font-headline font-bold text-lg">Stop</span>
+                                </button>
+                            </div>
+                            <br />
+                            <!-- Conveyor Panel Section -->
+                            <div class="flex items-center justify-between mb-8">
+                                <div>
+                                    <h2 class="text-2xl font-headline font-bold text-on-surface tracking-tight">Conveyor
+                                        Panel</h2>
+                                </div>
+                                <div class="flex gap-2">
+                                    <!--<span class="px-3 py-1 rounded-full bg-secondary-container/20 text-secondary text-[10px] font-bold uppercase">Manual Mode</span>
+            <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase">Vacuum Off</span>-->
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Start Button -->
+                                <button id="startConv"
+                                    class="group bg-gradient-to-br from-primary to-primary-container text-white p-6 rounded-xl flex flex-col items-center justify-center gap-4 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                                    <div
+                                        class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                                        <span class="material-symbols-outlined text-3xl" data-icon="play_arrow"
+                                            style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                                    </div>
+                                    <span class="font-headline font-bold text-lg">Start</span>
+                                </button>
+                                <!-- Stop Button -->
+                                <button id="stopConv"
+                                    class="group bg-secondary-container text-on-secondary-container p-6 rounded-xl flex flex-col items-center justify-center gap-4 shadow-lg shadow-secondary-container/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                                    <div
+                                        class="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center group-hover:bg-white/40 transition-colors">
+                                        <span class="material-symbols-outlined text-3xl" data-icon="stop"
+                                            style="font-variation-settings: 'FILL' 1;">stop</span>
+                                    </div>
+                                    <span class="font-headline font-bold text-lg">Stop</span>
+                                </button>
+                            </div>
+                            <!--<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 mt-4">
+                                <div>
+                                    <h2 class="text-2xl font-headline font-bold text-on-surface tracking-tight">Piezas Paletizadas:</h2>
+                                </div>
+                                <div class="">
+                                    <span class="font-headline font-bold text-lg">0</span>
+                                </div>
+                            </div>-->
+                        </div>
+                    </div>
+                    <!-- Production Metrics Section -->
+                    <div class="col-span-12">
+                        <div
+                            class="bg-surface-container rounded-xl p-8 flex flex-col justify-between relative overflow-hidden group gap-2">
+                            <div
+                                class="absolute -right-4 -top-4 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors">
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">
+                                    Production Metrics</p>
+                                <h3 class="text-on-surface font-headline font-semibold text-lg">Mover a posición</h3>
+                            </div>
+                            <!--<span class="text-6xl font-headline font-extrabold tracking-tighter text-on-surface">1,284</span>-->
+                            <div id="mover-posicion" class="flex flex-col p-6 bg-white shadow rounded-lg mt-4 gap-8">
+                                <div class="flex justify-evenly items-center">
+                                    <label for="X" class="font-bold">X</label>
+                                    <input type="number" id="x" placeholder="X" min="0.1" max="0.4" step="0.01"
+                                        value="0.2">
+                                    <label for="Y" class="font-bold">Y</label>
+                                    <input type="number" id="y" placeholder="Y" min="0.1" max="0.4" step="0.01"
+                                        value="0.2">
+                                    <label for="Z" class="font-bold">Z</label>
+                                    <input type="number" id="z" placeholder="Z" min="0.1" max="0.4" step="0.01"
+                                        value="0.2">
+                                    <label for="Roll" class="font-bold">Roll</label>
+                                    <input type="number" id="roll" placeholder="Roll" min="0.1" max="0.4" step="0.01"
+                                        value="0.2">
+                                    <label for="Pitch" class="font-bold">Pitch</label>
+                                    <input type="number" id="pitch" placeholder="Pitch" min="0.1" max="0.4" step="0.01"
+                                        value="0.2">
+                                    <label for="Yaw" class="font-bold">Yaw</label>
+                                    <input type="number" id="yaw" placeholder="Yaw" min="0.1" max="0.4" step="0.01"
+                                        value="0.2">
+                                    <!--<div class="flex items-center gap-2 mt-2 text-primary font-medium">
+                                        <span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+                                        <span class="text-xs">+12% from last shift</span>
+                                    </div>-->
+                                </div>
+                                <button type="button" id="btn-mover"
+                                    class="bg-gradient-to-br from-primary to-primary-container text-white rounded-md py-2 shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">Mover
+                                    posición</button>
+                            </div>
+                            <div>
+                                <h3 class="text-on-surface font-headline font-semibold text-lg mt-4">Posición actual
+                                </h3>
+                                <div class="flex flex-col p-6 bg-white shadow rounded-lg mt-4 gap-8">
+                                    <div class="grid grid-cols-3 gap-6 text-center">
+                                        <!-- Eje X -->
+                                        <div class="flex flex-col">
+                                            <span
+                                                class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Eje
+                                                X</span>
+                                            <span id="live-x"
+                                                class="font-mono text-xl text-blue-600 font-semibold">0.00</span>
+                                        </div>
+                                        <!-- Eje Y -->
+                                        <div class="flex flex-col">
+                                            <span
+                                                class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Eje
+                                                Y</span>
+                                            <span id="live-y"
+                                                class="font-mono text-xl text-blue-600 font-semibold">0.00</span>
+                                        </div>
+                                        <!-- Eje Z -->
+                                        <div class="flex flex-col">
+                                            <span
+                                                class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Eje
+                                                Z</span>
+                                            <span id="live-z"
+                                                class="font-mono text-xl text-blue-600 font-semibold">0.00</span>
+                                        </div>
+                                        <!-- Roll -->
+                                        <div class="flex flex-col border-t pt-4">
+                                            <span
+                                                class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Roll</span>
+                                            <span id="live-roll" class="font-mono text-lg text-slate-700">0.00</span>
+                                        </div>
+                                        <!-- Pitch -->
+                                        <div class="flex flex-col border-t pt-4">
+                                            <span
+                                                class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pitch</span>
+                                            <span id="live-pitch" class="font-mono text-lg text-slate-700">0.00</span>
+                                        </div>
+                                        <!-- Yaw -->
+                                        <div class="flex flex-col border-t pt-4">
+                                            <span
+                                                class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Yaw</span>
+                                            <span id="live-yaw" class="font-mono text-lg text-slate-700">0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="bg-surface-container-high rounded-xl p-6 space-y-4 mt-4">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-on-surface font-headline font-semibold text-lg mt-2">Piezas Paletizadas</h3>
+                                    <span class="text-sm font-headline font-bold">34.2°C</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                                    <div class="h-full bg-primary rounded-full w-[45%]"></div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold uppercase text-on-surface-variant">Payload</span>
+                                    <span class="text-sm font-headline font-bold">0.45kg / 1.0kg</span>
+                                </div>
+                            </div>-->
+                        </div>
+                        <!-- Status Quick Info -->
+                        <!--<div class="bg-surface-container-high rounded-xl p-6 space-y-4 mt-4">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-on-surface font-headline font-semibold text-lg mt-2">Piezas Paletizadas</h3>
+                                <span class="text-sm font-headline font-bold">34.2°C</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                                <div class="h-full bg-primary rounded-full w-[45%]"></div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold uppercase text-on-surface-variant">Payload</span>
+                                <span class="text-sm font-headline font-bold">0.45kg / 1.0kg</span>
+                            </div>
+                        </div>-->
+                        <!-- Panel de Logs (Oculto por defecto) -->
+                        <div id="panel-logs" class="col-span-12 hidden mt-8">
+                            <div
+                                class="bg-surface-container rounded-xl p-8 flex flex-col justify-between relative overflow-hidden group gap-2">
+                                <div
+                                    class="absolute -right-4 -top-4 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors pointer-events-none">
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">
+                                        LOGS</p>
+                                    <div class="flex justify-between items-center">
+                                        <h3 class="text-on-surface font-headline font-semibold text-lg">Registro de logs
+                                        </h3>
+                                        <div class="flex gap-2 items-center">
+                                            <select id="filtro-tipo"
+                                                class="bg-surface-variant text-slate-600 border-none text-sm rounded-lg focus:ring-primary focus:border-primary block p-2 cursor-pointer font-medium hover:bg-slate-100 transition-colors">
+                                                <option value="Todos">Todos</option>
+                                                <option value="Movimiento">Movimiento</option>
+                                                <option value="Pinza">Pinza</option>
+                                                <option value="Cinta">Cinta</option>
+                                                <option value="Sistema">Sistema</option>
+                                                <option value="Sensor 2">Sensor 2</option>
+                                            </select>
+                                            <button id="btn-ver-log"
+                                                class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all cursor-pointer hover:shadow-md active:scale-95">
+                                                Ver Log
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col p-6 bg-white shadow rounded-lg mt-4">
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr class="border-b border-slate-200">
+                                                    <th
+                                                        class="p-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                                        ID</th>
+                                                    <th
+                                                        class="p-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                                        Fecha</th>
+                                                    <th
+                                                        class="p-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                                        Tipo</th>
+                                                    <th
+                                                        class="p-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                                        Instrucción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tabla-logs-body">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+    <!-- Footer -->
+    <footer
+        class="bg-white dark:bg-slate-950 fixed bottom-0 w-full border-t-0 bg-slate-50 dark:bg-slate-900 flex justify-between items-center px-6 h-10 w-full border-t border-slate-100 dark:border-slate-800 z-50">
+        <div class="flex items-center gap-4">
+            <span class="font-['Inter'] text-[10px] text-slate-400">System Version 2.4.0-stable</span>
+            <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+            <span class="font-['Inter'] text-[10px] text-slate-400">Uptime: 14:23:05</span>
+        </div>
+        <div class="flex gap-6">
+            <a class="font-['Inter'] text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                href="#">Safety Protocol</a>
+            <a class="font-['Inter'] text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                href="#">Privacy</a>
+            <a class="font-['Inter'] text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                href="#">Terms</a>
+        </div>
+    </footer>
+    <script>
+        const statusDiv = document.getElementById("status");
+
+        document.getElementById("startBtn").addEventListener("click", () => {
+            statusDiv.innerHTML = "Estado: Ejecutando...";
+
+            fetch("http://127.0.0.1:5000/run_main", {
+                method: "POST"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    statusDiv.innerHTML = data.status;
+                })
+        });
+
+        document.getElementById("stopBtn").addEventListener("click", () => {
+            statusDiv.innerHTML = "Estado: STOP presionado";
+            fetch("http://127.0.0.1:5000/stop", {
+                method: "POST"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    statusDiv.innerHTML = data.status;
+                })
+        });
+
+        document.getElementById("homeBtn").addEventListener("click", () => {
+            statusDiv.innerHTML = "Estado: HOME presionado";
+            fetch("http://127.0.0.1:5000/home", {
+                method: "POST"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    statusDiv.innerHTML = data.status;
+                })
+
+        });
+
+        document.getElementById("startConv").addEventListener("click", () => {
+            fetch("http://127.0.0.1:5000/runconv", {
+                method: "POST"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    statusDiv.innerHTML = data.status;
+                })
+        });
+
+        document.getElementById("stopConv").addEventListener("click", () => {
+            fetch("http://127.0.0.1:5000/stopconv", {
+                method: "POST"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    statusDiv.innerHTML = data.status;
+                })
+        });
+
+        function actualizarPiezas() {
+            fetch("http://127.0.0.1:5000/paletizadas", { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Respuesta del servidor:", data);
+                    document.getElementById('piezas').textContent = data.piezas;
+                })
+                .catch(err => console.error(err));
+        }
+        setInterval(actualizarPiezas, 3000);
+
+        document.getElementById("btn-mover").addEventListener('click', (e) => {
+            e.preventDefault();
+            const datos = {
+                x: parseFloat(document.getElementById('x').value),
+                y: parseFloat(document.getElementById('y').value),
+                z: parseFloat(document.getElementById('z').value),
+                roll: parseFloat(document.getElementById('roll').value),
+                pitch: parseFloat(document.getElementById('pitch').value),
+                yaw: parseFloat(document.getElementById('yaw').value),
+            }
+
+            fetch("http://127.0.0.1:5000/mover_posicion", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(datos)
+            })
+                .then(responde => response.json())
+                .then(data => {
+                    statusDiv.innerHTML = data.status;
+                })
+                .catch(error => console.error("Error:", error));
+        });
+
+        function actualizarPosicion() {
+            fetch("http://127.0.0.1:5000/posicion", { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        statusDiv.innerHTML = "Error al obtener posicion"
+                        console.error("Error: ", data.message)
+                    } else {
+                        document.getElementById('live-x').innerText = data.x.toFixed(4);
+                        document.getElementById('live-y').innerText = data.y.toFixed(4);
+                        document.getElementById('live-z').innerText = data.z.toFixed(4);
+                        document.getElementById('live-roll').innerText = data.roll.toFixed(4);
+                        document.getElementById('live-pitch').innerText = data.pitch.toFixed(4);
+                        document.getElementById('live-yaw').innerText = data.yaw.toFixed(4);
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+        setInterval(actualizarPosicion, 3000);
+
+        document.getElementById("btn-desconectar").addEventListener("click", () => {
+            statusDiv.innerHTML = "DB desconectado";
+
+            fetch("http://127.0.0.1:5000/disconnect_DB", {
+                method: "POST"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    statusDiv.innerHTML = data.status;
+                })
+        });
+
+        const cargarLogs = () => {
+            const tipo = document.getElementById("filtro-tipo").value;
+            fetch(`http://127.0.0.1:5000/logs?tipo=${tipo}`, {
+                method: "GET"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "ok") {
+                        const tbody = document.getElementById("tabla-logs-body");
+                        tbody.innerHTML = "";
+
+                        data.logs.forEach(log => {
+                            const tr = document.createElement("tr");
+                            tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100";
+
+                            tr.innerHTML = `
+                            <td class="p-3 font-mono text-sm font-semibold text-blue-600">#${log[0] || ""}</td>
+                            <td class="p-3 font-mono text-sm text-slate-500">${log[1] || ""}</td>
+                            <td class="p-3 text-sm font-semibold text-blue-500">
+                                <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded-full text-xs">${log[2] || ""}</span>
+                            </td>
+                            <td class="p-3 text-sm text-slate-700">${log[3] || ""}</td>
+                        `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                })
+                .catch(error => console.error(error));
+        };
+
+        document.getElementById("btn-logs").addEventListener("click", (e) => {
+            e.preventDefault();
+            const panelLogs = document.getElementById("panel-logs");
+            panelLogs.classList.remove("hidden");
+            cargarLogs();
+        });
+
+        document.getElementById("btn-ver-log").addEventListener("click", cargarLogs);
+    </script>
+</body>
+
+</html>
