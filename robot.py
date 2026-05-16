@@ -10,7 +10,7 @@ password = "vgarled"
 if usar_database:
     conexion = conectar(user, password)
 
-robot = NiryoRobot("172.16.190.27")
+robot = NiryoRobot("127.0.0.1")
 sensor1 = "DI5"
 sensor2 = "DI1"
 conveyor_id = robot.set_conveyor()

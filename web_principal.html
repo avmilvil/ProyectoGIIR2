@@ -104,9 +104,9 @@
     <header
         class="bg-white dark:bg-slate-900 w-full top-0 border-b-0 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center px-6 h-16 w-full z-50">
         <div class="flex items-center gap-4">
-            <span class="text-lg font-bold text-slate-900 dark:text-slate-50 tracking-tight">Logo UPV</span>
+            <img src="upv.png" alt="Logo UPV" class="h-10 object-contain" style"filter: invert(1);">
             <div class="h-4 w-[1px] bg-outline-variant/30 ml-2"></div>
-            <span class="font-['Plus_Jakarta_Sans'] font-semibold text-sm text-slate-500">nombre de la app</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-bold text-base text-slate-800 tracking-tight">NedPanel app</span>
         </div>
         <div class="flex items-center gap-6">
             <div class="flex items-center gap-4">
@@ -172,6 +172,11 @@
                         <span>Configurar Robot</span>
                     </a>
                 </a>
+                    <a id="btn-equipo"
+                         class="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-white/50 transition-all font-['Inter'] text-xs font-medium uppercase tracking-wider cursor-pointer">
+                        <span class="material-symbols-outlined">memory</span>
+                        <span>Equipo</span>
+                    </a>        
                 <a class="flex items-center gap-3 px-4 py-3" href="#">
                     <button type="button" id="btn-desconectar"
                         class="bg-gradient-to-br from-primary to-primary-container text-white rounded-md py-2 px-2 shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">Disconnect
@@ -306,6 +311,36 @@
                                     <span class="font-headline font-bold text-lg">Stop</span>
                                 </button>
                             </div>
+                            <div class="mt-6 bg-white rounded-xl p-4 shadow-sm border border-outline-variant/10">
+                                <label class="text-lg font-semibold text-on-surface font-headline mb-6 block">
+                                     Velocidad de la Cinta
+                                  </label>
+
+                              <div class="flex items-center gap-4 pt-8">
+    
+                             <!-- Slider con tooltip encima -->
+                                <div class="relative flex-1" id="slider-container">
+                                  <!-- Tooltip que se mueve con el punto -->
+                                  <div id="slider-tooltip"
+                                    class="absolute -top-7 bg-primary text-white text-xs font-bold px-2 py-0.5 rounded pointer-events-none transition-all duration-75"
+                                    style="left: 50%; transform: translateX(-50%)">
+                                    50%
+                                  </div>
+                                  <!-- El slider real -->
+                                  <input type="range" id="cintaVelocidad" name="velocidad"
+                                    min="0" max="100" value="50"
+                                    class="w-full h-2 rounded-full appearance-none cursor-pointer accent-primary bg-slate-200">
+                                </div>
+
+                                <!-- Cajita numérica a la derecha -->
+                                <div class="flex items-center gap-1 shrink-0">
+                                  <input type="number" id="valorVelocidad"
+                                    min="0" max="100" value="50"
+                                    class="w-16 text-center font-mono font-bold text-primary border border-slate-200 rounded-lg py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                                  <span class="text-sm text-slate-400">%</span>
+                                </div>
+                              </div>
+                            </div>
                             <!--<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 mt-4">
                                 <div>
                                     <h2 class="text-2xl font-headline font-bold text-on-surface tracking-tight">Piezas Paletizadas:</h2>
@@ -424,23 +459,8 @@
                                                         class="text-3xl font-bold text-blue-600 font-mono">
                                                     0
                                                 </span>
-                                            </div>
-
-                                        </div>
-                            <!--<div class="bg-surface-container-high rounded-xl p-6 space-y-4 mt-4">
-                                <div class="flex justify-between items-center">
-                                    <h3 class="text-on-surface font-headline font-semibold text-lg mt-2">Piezas Paletizadas</h3>
-                                    <span class="text-sm font-headline font-bold">34.2°C</span>
-                                </div>
-                                <div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                                    <div class="h-full bg-primary rounded-full w-[45%]"></div>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-xs font-bold uppercase text-on-surface-variant">Payload</span>
-                                    <span class="text-sm font-headline font-bold">0.45kg / 1.0kg</span>
-                                </div>
-                            </div>-->
-                        </div>
+                                             </div>
+                            </div>
                         <!-- Status Quick Info -->
                         <!--<div class="bg-surface-container-high rounded-xl p-6 space-y-4 mt-4">
                             <div class="flex justify-between items-center">
@@ -455,6 +475,99 @@
                                 <span class="text-sm font-headline font-bold">0.45kg / 1.0kg</span>
                             </div>
                         </div>-->
+                        <!-- Panel Equipo - Sensores -->
+                        <div id="panel-equipo" class=" col-span-12 mt-2">
+                            <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/10 p-8">
+
+                                <div class="flex items-center justify-between mb-6">
+                                    <div>
+                                        <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Equipo</p>
+                                        <h3 class="text-on-surface font-headline font-semibold text-lg">Sensores de Proximidad IR</h3>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <span id="dot-autorefresh" class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                                            <span class="text-xs text-slate-400">Auto-refresh 3s</span>
+                                        </div>
+                                        <button id="btn-leer-sensores"
+                                            class="bg-gradient-to-br from-primary to-primary-container text-white text-xs font-bold px-4 py-2 rounded-lg shadow hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-sm">sensors</span>
+                                            Leer ahora
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-6 mb-6">
+                                    <!-- Sensor 1 DI5 -->
+                                    <div id="card-sensor1"
+                                        class="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-slate-100 bg-slate-50 transition-all duration-500 gap-3">
+                                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Sensor 1 — DI5</span>
+                                        <div id="indicador-sensor1"
+                                            class="w-14 h-14 rounded-full bg-slate-300 transition-all duration-500 shadow-inner"></div>
+                                        <span id="texto-sensor1" class="text-2xl font-bold font-mono text-slate-400">—</span>
+                                        <span id="desc-sensor1" class="text-xs text-slate-400 text-center">Sin lectura</span>
+                                    </div>
+
+                                    <!-- Sensor 2 DI1 -->
+                                    <div id="card-sensor2"
+                                        class="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-slate-100 bg-slate-50 transition-all duration-500 gap-3">
+                                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Sensor 2 — DI1</span>
+                                        <div id="indicador-sensor2"
+                                            class="w-14 h-14 rounded-full bg-slate-300 transition-all duration-500 shadow-inner"></div>
+                                        <span id="texto-sensor2" class="text-2xl font-bold font-mono text-slate-400">—</span>
+                                        <span id="desc-sensor2" class="text-xs text-slate-400 text-center">Sin lectura</span>
+                                    </div>
+                                </div>
+
+                                <div class="bg-slate-50 rounded-xl p-3 flex items-center justify-between border border-slate-100">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-slate-400 text-sm">schedule</span>
+                                        <span class="text-xs text-slate-400">Última lectura:</span>
+                                        <span id="ultima-lectura" class="text-xs font-mono font-semibold text-slate-600">—</span>
+                                    </div>
+                                </div>
+                                <!-- Sección Herramienta - Gripper -->
+                                <div class="mt-6 bg-white rounded-2xl shadow-sm border border-outline-variant/10 p-8">
+                                    <div class="mb-6">
+                                        <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Herramienta</p>
+                                        <h3 class="text-on-surface font-headline font-semibold text-lg">Control Gripper</h3>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-6 mb-6">
+                                        <!-- Abrir Gripper -->
+                                        <button id="btn-open-gripper"
+                                            class="group bg-gradient-to-br from-primary to-primary-container text-white p-6 rounded-xl flex flex-col items-center justify-center gap-4 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                                            <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                                                <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">left_panel_open</span>
+                                            </div>
+                                            <span class="font-headline font-bold text-lg">OPEN</span>
+                                        </button>
+
+                                        <!-- Cerrar Gripper -->
+                                        <button id="btn-close-gripper"
+                                            class="group bg-secondary-container text-on-secondary-container p-6 rounded-xl flex flex-col items-center justify-center gap-4 shadow-lg shadow-secondary-container/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                                            <div class="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center group-hover:bg-white/40 transition-colors">
+                                                <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">left_panel_close</span>
+                                            </div>
+                                            <span class="font-headline font-bold text-lg">CLOSE</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Estado actual de la pinza -->
+                                    <div class="bg-slate-50 rounded-xl p-4 flex items-center justify-between border border-slate-100">
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-slate-400 text-sm">settings</span>
+                                            <span class="text-xs text-slate-400">Estado de la pinza:</span>
+                                            <span id="estado-gripper" class="text-xs font-mono font-semibold text-slate-600">—</span>
+                                        </div>
+                                        <span id="indicador-gripper" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-200 text-slate-500">
+                                            Sin acción
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Panel de Logs (Oculto por defecto) -->
                         <div id="panel-logs" class="col-span-12 hidden mt-8">
                             <div
@@ -633,6 +746,34 @@
     const configBtn = document.getElementById("configRobotBtn");
     const configModal = document.getElementById("configModal");
     const closeConfigModal = document.getElementById("closeConfigModal");
+    const sliderVelocidad = document.getElementById("cintaVelocidad");
+    const valorVelocidad = document.getElementById("valorVelocidad");
+    const tooltip = document.getElementById("slider-tooltip");
+
+    function actualizarSlider(valor){
+        valor = Math.min(100,Math.max(0, parseInt(valor) || 0));
+        sliderVelocidad.value = valor;
+        valorVelocidad.value = valor;
+        tooltip.textContent = valor + "%";
+
+        requestAnimationFrame(() => {
+            const ancho = sliderVelocidad.getBoundingClientRect().width;
+            const thumbSize = 16;
+            const offset = (valor / 100) * (ancho - thumbSize) + (thumbSize / 2);
+            tooltip.style.left = offset + "px";
+            tooltip.style.transform = "translateX(-50%)";
+        });
+    }
+
+    sliderVelocidad.addEventListener("input", () => {
+        actualizarSlider(sliderVelocidad.value);
+    });
+
+    valorVelocidad.addEventListener("input", () => {
+        actualizarSlider(valorVelocidad.value);
+    });
+
+    window.addEventListener("load", () => actualizarSlider(50));
 
     configBtn.addEventListener("click", () => {
         configModal.classList.remove("hidden");
@@ -682,8 +823,11 @@
         });
 
         document.getElementById("startConv").addEventListener("click", () => {
-            fetch(`${getBaseURL()}/runconv`, {
-                method: "POST"
+            const vel = parseInt (sliderVelocidad.value);
+            fetch(`${getBaseURL()}/runconv_speed`,{
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ velocidad: vel})
             })
                 .then(response => response.json())
                 .then(data => {
@@ -815,7 +959,89 @@
         });
 
         document.getElementById("btn-ver-log").addEventListener("click", cargarLogs);
+
+        // ── Panel Equipo ────────────────────────────────────────
+        let intervaloSensores = null;
+
+        document.getElementById("btn-equipo").addEventListener("click", (e) => {
+            e.preventDefault();
+            const panel = document.getElementById("panel-equipo");;
+            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            iniciarAutoRefreshSensores();
+        });
+
+        function leerSensores() {
+            fetch(`${getBaseURL()}/sensores`, { method: "GET" })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === "ok") {
+                        actualizarSensor("sensor1", data.sensor1);
+                        actualizarSensor("sensor2", data.sensor2);
+                        document.getElementById("ultima-lectura").textContent =
+                            new Date().toLocaleTimeString();
+                    }
+                })
+                .catch(err => console.error("Error sensores:", err));
+        }
+
+        function actualizarSensor(id, estado) {
+            const indicador = document.getElementById(`indicador-${id}`);
+            const texto     = document.getElementById(`texto-${id}`);
+            const card      = document.getElementById(`card-${id}`);
+            const desc      = document.getElementById(`desc-${id}`);
+
+            texto.textContent = estado;
+
+            if (estado === "HIGH") {
+                indicador.className = "w-14 h-14 rounded-full transition-all duration-500 shadow-lg bg-green-500 animate-pulse";
+                card.className      = "flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-green-200 bg-green-50 transition-all duration-500 gap-3";
+                texto.className     = "text-2xl font-bold font-mono text-green-600";
+                desc.textContent    = "Objeto detectado";
+                desc.className      = "text-xs text-green-500 text-center font-medium";
+            } else {
+                indicador.className = "w-14 h-14 rounded-full transition-all duration-500 shadow-inner bg-red-400";
+                card.className      = "flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-red-100 bg-red-50 transition-all duration-500 gap-3";
+                texto.className     = "text-2xl font-bold font-mono text-red-500";
+                desc.textContent    = "Sin objeto";
+                desc.className      = "text-xs text-red-400 text-center font-medium";
+            }
+        }
+
+        function iniciarAutoRefreshSensores() {
+            if (intervaloSensores) clearInterval(intervaloSensores);
+            leerSensores();
+            intervaloSensores = setInterval(leerSensores, 3000);
+        }
+
+        document.getElementById("btn-leer-sensores").addEventListener("click", leerSensores);
+
+                // ── Gripper ─────────────────────────────────────────────
+        document.getElementById("btn-open-gripper").addEventListener("click", () => {
+            fetch(`${getBaseURL()}/open_gripper`, { method: "POST" })
+                .then(r => r.json())
+                .then(data => {
+                    statusDiv.innerHTML = data.status;
+                    document.getElementById("estado-gripper").textContent = "Abierta";
+                    const ind = document.getElementById("indicador-gripper");
+                    ind.textContent = "ABIERTA";
+                    ind.className = "px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-600";
+                });
+        });
+
+        document.getElementById("btn-close-gripper").addEventListener("click", () => {
+            fetch(`${getBaseURL()}/close_gripper`, { method: "POST" })
+                .then(r => r.json())
+                .then(data => {
+                    statusDiv.innerHTML = data.status;
+                    document.getElementById("estado-gripper").textContent = "Cerrada";
+                    const ind = document.getElementById("indicador-gripper");
+                    ind.textContent = "CERRADA";
+                    ind.className = "px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-600";
+                });
+        });
+    iniciarAutoRefreshSensores();
     </script>
+
 </body>
 
 </html>
