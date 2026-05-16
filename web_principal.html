@@ -162,6 +162,15 @@
                     href="#">
                     <span class="material-symbols-outlined" data-icon="tune">tune</span>
                     <span>Settings</span>
+                    <a id="configRobotBtn"
+                        class="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all font-['Inter'] text-xs font-medium uppercase tracking-wider cursor-pointer">
+
+                        <span class="material-symbols-outlined">
+                            settings_ethernet
+                        </span>
+
+                        <span>Configurar Robot</span>
+                    </a>
                 </a>
                 <a class="flex items-center gap-3 px-4 py-3" href="#">
                     <button type="button" id="btn-desconectar"
@@ -399,6 +408,25 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="mt-6 bg-surface-container-highest rounded-xl p-6 flex items-center justify-between">
+    
+                                            <div class="flex flex-col">
+                                                <span class="text-[14px] font-headline font-semibold text-lg mt-4">
+                                                    Piezas paletizadas
+                                                </span>
+                                                <span class="text-xs text-slate-500">
+                                                    Total procesadas por el sistema
+                                                </span>
+                                            </div>
+
+                                            <div class="text-right">
+                                                <span id="piezas"
+                                                        class="text-3xl font-bold text-blue-600 font-mono">
+                                                    0
+                                                </span>
+                                            </div>
+
+                                        </div>
                             <!--<div class="bg-surface-container-high rounded-xl p-6 space-y-4 mt-4">
                                 <div class="flex justify-between items-center">
                                     <h3 class="text-on-surface font-headline font-semibold text-lg mt-2">Piezas Paletizadas</h3>
@@ -507,24 +535,130 @@
                 href="#">Terms</a>
         </div>
     </footer>
+    <div id="configModal"
+        class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-[400px] relative">
+
+            <button id="closeConfigModal"
+                class="absolute top-4 right-4 text-slate-500 hover:text-black text-xl">
+                ✕
+            </button>
+
+            <h2 class="text-2xl font-bold mb-6">
+                Configuración Robot
+            </h2>
+
+            <div class="flex flex-col gap-4">
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        Dirección IP
+                    </label>
+
+                    <input
+                        type="text"
+                        id="server-ip"
+                        placeholder="127.0.0.1"
+                        class="w-full rounded-lg border border-slate-300 p-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        Puerto
+                    </label>
+
+                    <input
+                        type="number"
+                        id="server-port"
+                        placeholder="5000"
+                        class="w-full rounded-lg border border-slate-300 p-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        IP del robot
+                    </label>
+
+                    <input
+                    type="text"
+                    id="robot-ip"
+                    placeholder="192.168.1.50"
+                    class="w-full rounded-lg border border-slate-300 p-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        IP del Robot
+                    </label>
+
+                <button
+                    id="save-server"
+                    class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 transition-all">
+                    Guardar configuración
+                </button>
+
+            </div>
+        </div>
+    </div>
+
     <script>
         const statusDiv = document.getElementById("status");
+
+        document.getElementById("save-server").addEventListener("click", () => {
+
+            serverIP = document.getElementById("server-ip").value || "127.0.0.1";
+            serverPort = document.getElementById("server-port").value || "5000";
+            robotIP = document.getElementById("robot-ip")?.value || "";
+
+            configModal.classList.add("hidden");
+
+            statusDiv.innerHTML =
+                `Configuración guardada:
+                ${serverIP}:${serverPort}
+                | Robot: ${robotIP}`;
+
+            console.log("CONFIG GUARDADA");
+            console.log(serverIP, serverPort, robotIP);
+        });
+
+        let serverIP = "127.0.0.1";
+        let serverPort = "5000";
+        let robotIP = "";
+
+        function getBaseURL() {
+            return `http://${serverIP}:${serverPort}`;
+        }
+
+    const configBtn = document.getElementById("configRobotBtn");
+    const configModal = document.getElementById("configModal");
+    const closeConfigModal = document.getElementById("closeConfigModal");
+
+    configBtn.addEventListener("click", () => {
+        configModal.classList.remove("hidden");
+    });
+
+    closeConfigModal.addEventListener("click", () => {
+        configModal.classList.add("hidden");
+    });
 
         document.getElementById("startBtn").addEventListener("click", () => {
             statusDiv.innerHTML = "Estado: Ejecutando...";
 
-            fetch("http://127.0.0.1:5000/run_main", {
-                method: "POST"
-            })
-                .then(response => response.json())
-                .then(data => {
-                    statusDiv.innerHTML = data.status;
+            fetch(`${getBaseURL()}/run_main`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    robot_ip: robotIP
                 })
+            })
         });
 
         document.getElementById("stopBtn").addEventListener("click", () => {
             statusDiv.innerHTML = "Estado: STOP presionado";
-            fetch("http://127.0.0.1:5000/stop", {
+            fetch(`${getBaseURL()}/stop`, {
                 method: "POST"
             })
                 .then(response => response.json())
@@ -535,18 +669,20 @@
 
         document.getElementById("homeBtn").addEventListener("click", () => {
             statusDiv.innerHTML = "Estado: HOME presionado";
-            fetch("http://127.0.0.1:5000/home", {
-                method: "POST"
-            })
-                .then(response => response.json())
-                .then(data => {
-                    statusDiv.innerHTML = data.status;
+            fetch(`${getBaseURL()}/home`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    robot_ip: robotIP
                 })
+            })
 
         });
 
         document.getElementById("startConv").addEventListener("click", () => {
-            fetch("http://127.0.0.1:5000/runconv", {
+            fetch(`${getBaseURL()}/runconv`, {
                 method: "POST"
             })
                 .then(response => response.json())
@@ -556,7 +692,7 @@
         });
 
         document.getElementById("stopConv").addEventListener("click", () => {
-            fetch("http://127.0.0.1:5000/stopconv", {
+            fetch(`${getBaseURL()}/stopconv`, {
                 method: "POST"
             })
                 .then(response => response.json())
@@ -566,7 +702,7 @@
         });
 
         function actualizarPiezas() {
-            fetch("http://127.0.0.1:5000/paletizadas", { method: 'POST' })
+            fetch(`${getBaseURL()}/paletizadas`, { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
                     console.log("Respuesta del servidor:", data);
@@ -587,14 +723,22 @@
                 yaw: parseFloat(document.getElementById('yaw').value),
             }
 
-            fetch("http://127.0.0.1:5000/mover_posicion", {
+            fetch(`${getBaseURL()}/mover_posicion`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(datos)
+                body: JSON.stringify({
+                    x: parseFloat(document.getElementById('x').value),
+                    y: parseFloat(document.getElementById('y').value),
+                    z: parseFloat(document.getElementById('z').value),
+                    roll: parseFloat(document.getElementById('roll').value),
+                    pitch: parseFloat(document.getElementById('pitch').value),
+                    yaw: parseFloat(document.getElementById('yaw').value),
+                    robot_ip: robotIP
+                })
             })
-                .then(responde => response.json())
+                .then(response => response.json())
                 .then(data => {
                     statusDiv.innerHTML = data.status;
                 })
@@ -602,7 +746,7 @@
         });
 
         function actualizarPosicion() {
-            fetch("http://127.0.0.1:5000/posicion", { method: 'POST' })
+            fetch(`${getBaseURL()}/posicion`, { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
@@ -624,7 +768,7 @@
         document.getElementById("btn-desconectar").addEventListener("click", () => {
             statusDiv.innerHTML = "DB desconectado";
 
-            fetch("http://127.0.0.1:5000/disconnect_DB", {
+            fetch(`${getBaseURL()}/disconnect_DB`, {
                 method: "POST"
             })
                 .then(response => response.json())
@@ -635,7 +779,7 @@
 
         const cargarLogs = () => {
             const tipo = document.getElementById("filtro-tipo").value;
-            fetch(`http://127.0.0.1:5000/logs?tipo=${tipo}`, {
+            fetch(`${getBaseURL()}/logs?tipo=${tipo}`, {
                 method: "GET"
             })
                 .then(response => response.json())

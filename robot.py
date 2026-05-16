@@ -10,12 +10,13 @@ password = "vgarled"
 if usar_database:
     conexion = conectar(user, password)
 
-robot = NiryoRobot("localhost")
+robot = NiryoRobot("172.16.190.27")
 sensor1 = "DI5"
 sensor2 = "DI1"
 conveyor_id = robot.set_conveyor()
 paletizadas = 0
 stop_requested = False
+
 inicio = PoseObject(x=0.140, y=0.000, z=0.203, roll=0.003, pitch=0.757, yaw=-0.001)
 subir_abierto = PoseObject(x=0.155, y=-0.009, z=0.327, roll=0.460, pitch=1.505, yaw=0.547)
 bajar1 = PoseObject(x=0.226, y=-0.194, z=0.221, roll=-3.037, pitch=1.344, yaw=-2.859)
@@ -210,7 +211,7 @@ def main():
             s1 = robot.digital_read(sensor1)
             s2 = robot.digital_read(sensor2)
 
-            if s1 == PinState.HIGH and s2 == PinState.LOW:
+            if s1 == PinState.LOW and s2 == PinState.HIGH:
                 #Para la cinta
                 robot.stop_conveyor(conveyor_id)
                 #Guarda en la BBDD
@@ -267,7 +268,7 @@ def main():
                     insertar_log(conexion, "Abriendo pinza para soltar pieza paletizada", "Pinza")
                 break
 
-            if s2 == PinState.HIGH:
+            if s2 == PinState.LOW and s1 == PinState.LOW:
                 #Para la cinta
                 robot.stop_conveyor(conveyor_id)
                 #Guarda en la BBDD
