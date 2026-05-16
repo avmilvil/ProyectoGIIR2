@@ -1,8 +1,8 @@
 import threading
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from pyniryo import ConveyorDirection,PinState
-import robot
+from pyniryo import PinState
+import robot 
 
 app = Flask(__name__)
 CORS(app)
@@ -23,15 +23,15 @@ def run_main():
 @app.route("/runconv", methods=["POST"])
 def runconv():
     def task():
-        with robot_lock:
-            robot.run_conv()
+           with robot_lock: 
+                robot.run_conv()
     threading.Thread(target=task).start()        
     return jsonify({"status":"Cinta funcionando"})
 
 @app.route("/stopconv", methods=["POST"])
 def stopconv():
     def task():
-        with robot_lock:
+        with robot_lock: 
             print("Deteniendo cinta...")
             robot.stop_conv()
     threading.Thread(target=task).start()
@@ -42,19 +42,9 @@ def runconv_speed():
     data = request.json
     velocidad = int(data.get("velocidad", 50))
     def task():
-        with robot_lock:
-            robot.robot.run_conveyor(
-                robot.conveyor_id, 
-                speed=velocidad, 
-                direction=ConveyorDirection.FORWARD
-            )
-            if robot.conexion:
-                robot.insertar_log(
-                    robot.conexion, 
-                    f"Corriendo cinta a velocidad {velocidad}%", 
-                    "Cinta"
-                )
-    threading.Thread(target=task).start()
+        with robot_lock:    
+            robot.run_conv(velocidad)
+    threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": f"Cinta corriendo al {velocidad}%"})
 
 @app.route("/home", methods=["POST"])
@@ -79,14 +69,14 @@ def movehome():
 
 @app.route("/stop", methods=["POST"])
 def stop():
-    global funcionando
+
     threading.Thread(target=robot.stop_all).start()
-    funcionando = False
+
     return jsonify({"status":"Parando robot"})
 
 @app.route("/posicion", methods=["POST"])
 def get_posicion():
-    print(f"DEBUG enviando poscioon actual -> {robot.posicion}")
+    print(f"DEBUG enviando posicioon actual -> {robot.posicion}")
     p = robot.posicion
     try:
         return jsonify({
@@ -99,7 +89,7 @@ def get_posicion():
             "yaw": p["yaw"]
         })
     except Exception as e:
-        print(f"Error en /posicion: {e}")
+        print(f"Error en posicion: {e}")
         return jsonify({"error": str(e)}), 500
     
 @app.route("/paletizadas", methods=["POST"])
@@ -113,11 +103,21 @@ def piezaspaletizadas():
 def moverposicion():
     data = request.json
     def task():
-        with robot_lock:
-            print(f"Moviendo a posición: {data}")  
-            robot.mover(data["x"], data["y"], data["z"], data["roll"], data["pitch"], data["yaw"])
-    threading.Thread(target=task).start()
-    return jsonify({"status":"Moviendo posición"})
+        adquirido = robot_lock.acquire(timeout=5)
+        if not adquirido:
+            print("El robot está bloqueado por otra tarea.")
+            return
+        try:
+            print(f"Moviendo a posición: {data}")
+            robot.mover(data["x"], data["y"], data["z"],
+                        data["roll"], data["pitch"], data["yaw"])
+        except Exception as e:
+            print(f"Error al mover posición: {e}")
+        finally:
+            robot_lock.release()
+    threading.Thread(target=task, daemon=True).start()
+    return jsonify({"status": "Moviendo posición"})
+
 
 @app.route("/disconnect_DB", methods=["POST"])
 def desconectarDB():
@@ -132,7 +132,8 @@ def desconectarDB():
 def ver_logs():
     conexion = robot.conexion
     if conexion is None:
-        return jsonify({"status": "error", "logs": [], "mensaje": "Sin conexion a BD"})
+        return jsonify({"status": "error", "logs": [],
+                        "mensaje": "Sin conexión a BD"})
     tipo_filtro = request.args.get("tipo")
     print(f"--- NUEVA PETICION DE LOGS ---")
     print(f"Filtro recibido desde la web: '{tipo_filtro}'")
@@ -143,38 +144,58 @@ def ver_logs():
 @app.route("/sensores", methods=["GET"])
 def leer_sensores():
     try:
-        s1 = robot.robot.digital_read(robot.sensor1)
-        s2 = robot.robot.digital_read(robot.sensor2)
-        estado_s1 = "HIGH" if s1 == PinState.HIGH else "LOW"
-        estado_s2 = "HIGH" if s2 == PinState.HIGH else "LOW"
-        if robot.conexion:
-            robot.insertar_log(
-                robot.conexion,
-                f"Lectura sensores — DI5: {estado_s1} | DI1: {estado_s2}",
-                "Sensor"
-            )
-        return jsonify({"status": "ok", "sensor1": estado_s1, "sensor2": estado_s2})
+        adquirido = robot_lock.acquire(timeout=3)
+        if not adquirido:
+            return jsonify({"status": "error",
+                            "mensaje": "Robot ocupado, reintenta en un momento"}), 503
+        try:
+            s1 = robot.robot.digital_read(robot.sensor1)
+            s2 = robot.robot.digital_read(robot.sensor2)
+        finally:
+            robot_lock.release()
+ 
+        return jsonify({
+            "status":  "ok",
+            "sensor1": "HIGH" if s1 == PinState.HIGH else "LOW",
+            "sensor2": "HIGH" if s2 == PinState.HIGH else "LOW",
+        })
     except Exception as e:
         return jsonify({"status": "error", "mensaje": str(e)}), 500
 
 @app.route("/open_gripper", methods=["POST"])
 def open_gripper():
     def task():
-        with robot_lock:
+        adquirido = robot_lock.acquire(timeout=5)
+        if not adquirido:
+            print("El robot está bloqueado, no se pudo abrir gripper.")
+            return
+        try:
             robot.robot.open_gripper()
             if robot.conexion:
-                robot.insertar_log(robot.conexion, "Pinza abierta desde interfaz", "Pinza")
-    threading.Thread(target=task).start()
+                robot.insertar_log(robot.conexion, "Pinza abierta (manual)", "Pinza")
+        except Exception as e:
+            print(f"Error al abrir gripper: {e}")
+        finally:
+            robot_lock.release()
+    threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": "Pinza abriendo"})
-
+ 
 @app.route("/close_gripper", methods=["POST"])
 def close_gripper():
     def task():
-        with robot_lock:
+        adquirido = robot_lock.acquire(timeout=5)
+        if not adquirido:
+            print("El robot está bloqueado, no se pudo cerrar gripper.")
+            return
+        try:
             robot.robot.close_gripper()
             if robot.conexion:
-                robot.insertar_log(robot.conexion, "Pinza cerrada desde interfaz", "Pinza")
-    threading.Thread(target=task).start()
+                robot.insertar_log(robot.conexion, "Pinza cerrada (manual)", "Pinza")
+        except Exception as e:
+            print(f"Error al cerrar gripper: {e}")
+        finally:
+            robot_lock.release()
+    threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": "Pinza cerrando"})
 
 if __name__ == "__main__":
