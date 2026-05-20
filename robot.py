@@ -1,14 +1,21 @@
 import time
 from pyniryo import *
-from conexionBBDD import *
+import requests
+URL = "http://127.0.0.1:5000/insertaenlog"
 
+def enviar_log(instruccion, elemento):
+    try:
+        data = [instruccion, elemento]
+        r = requests.post(URL, json=data, timeout=3)
+        return r.status_code == 202
+    except requests.exceptions.RequestException:
+        return False
+    
 #Configuración de la base de datos
-usar_database = True
-user = "vgarled"
-password = "vgarled"
+#usar_database = True
 
-if usar_database:
-    conexion = conectar(user, password)
+#if usar_database:
+#    conexion = conectar(user, password)
 
 robot = NiryoRobot("127.0.0.1")
 sensor1 = "DI5"
@@ -50,12 +57,12 @@ def inicializar_robot():
         print("Calibrando...")
         time.sleep(2)
         robot.calibrate_auto()
-        if conexion:
-            insertar_log(conexion, "Robot Calibrando", "Sistema")
+        
+        enviar_log("Robot Calibrando", "Sistema")
         print("Calibración terminada")
         robot.update_tool()
-        if conexion:
-            insertar_log(conexion, "Robot actualizando herramienta", "Sistema")
+        
+        enviar_log("Robot actualizando herramienta", "Sistema")
         print("Robot listo.")
     except Exception as e:
         print(f"Error en calibración: {e}")
@@ -66,11 +73,11 @@ def inicializar_robot():
 def run_conv(velocidad=50):
     if conveyor_id:
         robot.run_conveyor(conveyor_id, speed=velocidad, direction=ConveyorDirection.FORWARD)
-        if conexion:
-            insertar_log(conexion, f"Corriendo Cinta al {velocidad}%", "Cinta")
-        robot.stop_conveyor(conveyor_id)
-        if conexion:
-            insertar_log(conexion, "Cinta Detenida", "Cinta")
+        enviar_log(f"Corriendo Cinta al {velocidad}%", "Cinta")
+        
+def stop_conv():
+    robot.stop_conveyor(conveyor_id)
+    enviar_log("Cinta Detenida", "Cinta")
 
 def move_home():
     global posicion
@@ -78,8 +85,7 @@ def move_home():
     robot.move_to_home_pose()
     pos = robot.get_pose()
     actualizar_posicion(pos)
-    if conexion:
-        insertar_log(conexion, "Movimiendo a HOME", "Movimiento")
+    enviar_log("Movimiendo a HOME", "Movimiento")
 
 def mover(x, y, z, roll, pitch, yaw):
     pos = PoseObject(x=x, y=y, z=z, roll=roll, pitch=pitch, yaw=yaw)
@@ -87,8 +93,7 @@ def mover(x, y, z, roll, pitch, yaw):
         robot.wait(0.1)
         robot.move_pose(pos)
         actualizar_posicion(pos)
-        if conexion:
-            insertar_log(conexion, f"Moviendo a posición: x={pos.x}, y={pos.y}, z={pos.z}, roll={pos.roll}, pitch={pos.pitch}, yaw={pos.yaw}", "Movimiento")
+        enviar_log(f"Moviendo a posición: x={pos.x}, y={pos.y}, z={pos.z}, roll={pos.roll}, pitch={pos.pitch}, yaw={pos.yaw}", "Movimiento")
         robot.wait(0.2) 
     except Exception as e:
         print(f"Error en movimiento: {e}")
@@ -107,22 +112,21 @@ def actualizar_posicion(pose_object):
     except Exception as e:
         print(f"No se pudo actualizar la posición: {e}")
     
-def close_DB():
-    global usar_database, conexion
+# def close_DB():
+#     global usar_database, conexion
 
-    if usar_database and conexion is not None:
-        try:
-            desconectar(conexion)
-        except Exception as e:
-            print(f"Error al intentar cerrar la BD: {e}")
-        finally:
-            usar_database = False
-            conexion = None
+#     if usar_database and conexion is not None:
+#         try:
+#             desconectar(conexion)
+#         except Exception as e:
+#             print(f"Error al intentar cerrar la BD: {e}")
+#         finally:
+#             usar_database = False
+#             conexion = None
 
 def main():
     inicializar_robot()
-    if conexion:
-        insertar_log(conexion, "Robot inicializado", "Sistema")
+    enviar_log("Robot inicializado", "Sistema")
     global paletizadas
     global stop_requested
     global posicion
@@ -130,82 +134,70 @@ def main():
     for i in range(4):
         if stop_requested:
             print("STOP solicitado, saliendo de main")
-            if conexion:
-                insertar_log(conexion, "Stop Solicitado, deteniendo main", "Sistema")
+            enviar_log("Stop Solicitado, deteniendo main", "Sistema")
             break
  
         #Abre la pinza
         robot.open_gripper()
         #Guarda en la BBDD
-        if conexion:
-            insertar_log(conexion, "Abriendo pinza para tomar pieza", "Pinza")
+        enviar_log("Abriendo pinza para tomar pieza", "Pinza")
  
         #Se mueve a inicio
         robot.move_pose(inicio)
         actualizar_posicion(inicio)
         #Guarda en la BBDD
-        if conexion:
-            insertar_log(conexion, "Moviendo a posición inicial para tomar pieza", "Movimiento")
+        enviar_log("Moviendo a posición inicial para tomar pieza", "Movimiento")
  
         #Se mueve a subir_abierto
         robot.move_pose(subir_abierto)
         actualizar_posicion(subir_abierto)
         #Guarda en la BBDD
-        if conexion:
-            insertar_log(conexion, "Moviendo a posición de agarre", "Movimiento")
+        enviar_log("Moviendo a posición de agarre", "Movimiento")
  
         #Se mueve a bajar1
         robot.move_pose(bajar1)
         actualizar_posicion(bajar1)
         #Guarda en la BBDD
-        if conexion:
-            insertar_log(conexion, "Ejecutando bajar a pieza", "Movimiento")
+        enviar_log("Ejecutando bajar a pieza", "Movimiento")
  
         #Se mueve a bajar1_2
         robot.move_pose(bajar1_2)
         actualizar_posicion(bajar1_2)
         #Guarda en la BBDD
-        if conexion:
-            insertar_log(conexion, "Ejecutando agarrar pieza", "Pinza")
+        enviar_log("Ejecutando agarrar pieza", "Pinza")
  
         #Cierra pinza
         robot.close_gripper()
         #Guarda en la BBDD
-        if conexion:
-            insertar_log(conexion, "Cerrando pinza para agarrar pieza", "Pinza")
+        enviar_log("Cerrando pinza para agarrar pieza", "Pinza")
  
         #Se mueve a subir_cerrado1
         robot.move_pose(subir_cerrado1)
         actualizar_posicion(subir_cerrado1)
         #Guarda en la BBDD
-        if conexion:
-            insertar_log(conexion, "Subiendo con pieza agarrada", "Movimiento")
+        enviar_log("Subiendo con pieza agarrada", "Movimiento")
  
         #Se mueve a bajar1_3
         robot.move_pose(bajar1_3)
         actualizar_posicion(bajar1_3)
         #Guarda en la BBDD
-        if conexion:
-            insertar_log(conexion, "Moviendo a posición para soltar pieza en cinta", "Movimiento")
+        enviar_log("Moviendo a posición para soltar pieza en cinta", "Movimiento")
  
         #Abre pinza
         robot.open_gripper()
         #Guarda en la BBDD
-        if conexion:
-            insertar_log(conexion, "Abriendo pinza para soltar pieza en cinta", "Pinza")
+        enviar_log("Abriendo pinza para soltar pieza en cinta", "Pinza")
  
         #Se mueve a subir_poquito
         robot.move_pose(subir_poquito)
         actualizar_posicion(subir_poquito)
         #Guarda en la BBDD
-        if conexion:
-            insertar_log(conexion, "Subiendo un poco después de soltar pieza en cinta", "Movimiento")
+        enviar_log("Subiendo un poco después de soltar pieza en cinta", "Movimiento")
  
         #Corre la cinta
         robot.run_conveyor(conveyor_id, speed=50, direction=ConveyorDirection.FORWARD)
         #Guarda en la BBDD
-        if conexion:
-            insertar_log(conexion, "Corriendo cinta después de soltar pieza", "Cinta")
+        enviar_log("Corriendo cinta después de soltar pieza", "Cinta")
  
         while True:
             if stop_requested:
@@ -217,78 +209,65 @@ def main():
                 #Para la cinta
                 robot.stop_conveyor(conveyor_id)
                 #Guarda en la BBDD
-                if conexion:
-                    insertar_log(conexion, "Pieza detectada en sensor 1, deteniendo cinta para paletizar", "Cinta")
- 
+                enviar_log("Pieza detectada en sensor 1, deteniendo cinta para paletizar", "Cinta")
                 robot.wait(0.1)
  
                 #Se mueve a atacar1
                 robot.move_pose(atacar1)
                 actualizar_posicion(atacar1)
                 #Guarda en la BBDD
-                if conexion:
-                    insertar_log(conexion, "Moviendo a posición de ataque para paletizar", "Movimiento")
+                enviar_log("Moviendo a posición de ataque para paletizar", "Movimiento")
  
                 #Se mueve a atacar_abajo1
                 robot.move_pose(atacar_abajo1)
                 actualizar_posicion(atacar_abajo1)
-                if conexion:
-                    insertar_log(conexion, "Bajando para agarrar pieza para paletizar", "Movimiento")
+                enviar_log("Bajando para agarrar pieza para paletizar", "Movimiento")
  
                 #Cierra la pinza
                 robot.close_gripper()
                 #Guarda en la BBDD
-                if conexion:
-                    insertar_log(conexion, "Cerrando pinza para agarrar pieza para paletizar", "Pinza")
+                enviar_log("Cerrando pinza para agarrar pieza para paletizar", "Pinza")
  
                 #Se mueve a subir_ataque
                 robot.move_pose(subir_ataque)
                 actualizar_posicion(subir_ataque)
                 #Guarda en la BBDD
-                if conexion:
-                    insertar_log(conexion, "Subiendo con pieza para paletizar", "Movimiento")
+                enviar_log("Subiendo con pieza para paletizar", "Movimiento")
  
                 #Se mueve a bajar_ataque1
                 robot.move_pose(bajar_ataque1)
                 actualizar_posicion(bajar_ataque1)
                 #Guarda en la BBDD
-                if conexion:
-                    insertar_log(conexion, "Bajando con la pieza a la posición de paletizado", "Movimiento")
+                enviar_log("Bajando con la pieza a la posición de paletizado", "Movimiento")
  
                 #Se mueve a subir_final_ataque1
                 robot.move_pose(subir_final_ataque1)
                 actualizar_posicion(subir_final_ataque1)
                 #Guarda en la BBDD
-                if conexion:
-                    insertar_log(conexion, "Subiendo después de paletizar", "Movimiento")
+                enviar_log("Subiendo después de paletizar", "Movimiento")
  
                 #Abre la pinza
                 robot.open_gripper()
                 #Guarda en la BBDD
-                if conexion:
-                    insertar_log(conexion, "Abriendo pinza para soltar pieza paletizada", "Pinza")
+                enviar_log("Abriendo pinza para soltar pieza paletizada", "Pinza")
                 break
  
-            if s2 == PinState.HIGH:
+            if s2 == PinState.LOW and s1 == PinState.LOW:
                 #Para la cinta
                 robot.stop_conveyor(conveyor_id)
                 #Guarda en la BBDD
-                if conexion:
-                    insertar_log(conexion, "Pieza detectada en sensor 2", "Sensor 2")
+                enviar_log("Pieza detectada en sensor 2", "Sensor 2")
  
                 #Corre la cinta hacia atrás
                 robot.run_conveyor(conveyor_id, speed=50, direction=ConveyorDirection.BACKWARD)
                 #Guarda en la BBDD
-                if conexion:
-                    insertar_log(conexion, "Revirtiendo cinta para desechar pieza", "Cinta")
+                enviar_log("Revirtiendo cinta para desechar pieza", "Cinta")
  
                 robot.wait(15)
  
                 #Para la cinta
                 robot.stop_conveyor(conveyor_id)
-
-                if conexion:
-                    insertar_log(conexion, "Deteniendo cinta después de desechar pieza", "Cinta")
+                enviar_log("Deteniendo cinta después de desechar pieza", "Cinta")
                 break
  
             robot.wait(0.02)

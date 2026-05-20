@@ -1,16 +1,39 @@
 import threading
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from pyniryo import PinState
 import robot 
+from queue import Queue
+import time
+from conexionBBDD import *
 
 app = Flask(__name__)
 CORS(app)
 robot_lock = threading.Lock()
-@app.route("/")
+cola = Queue()
 
+def worker():
+    while True:
+        data = cola.get()
+        instruccion, elemento = data
+
+        try:
+            conn = conectar()
+            insertar_log(conn, instruccion, elemento)
+            conn.close()
+
+            print("Insertado: ", instruccion, elemento)
+        except Exception as e:
+            print("Error insertando, reintentando...", e)
+            time.sleep(5)
+            cola.put(data)
+        finally:
+            cola.task_done()
+
+@app.route("/")
 def home():
-    return "API funcionando"
+    return render_template("web_principal.html")
+
 
 @app.route("/run_main", methods=["POST"])
 def run_main():
@@ -20,13 +43,13 @@ def run_main():
     threading.Thread(target=task).start()
     return jsonify({"status": "Moviendo robot"})
 
-@app.route("/runconv", methods=["POST"])
-def runconv():
-    def task():
-           with robot_lock: 
-                robot.run_conv()
-    threading.Thread(target=task).start()        
-    return jsonify({"status":"Cinta funcionando"})
+# @app.route("/runconv", methods=["POST"])
+# def runconv():
+#     def task():
+#            with robot_lock: 
+#                 robot.run_conv()
+#     threading.Thread(target=task).start()        
+#     return jsonify({"status":"Cinta funcionando"})
 
 @app.route("/stopconv", methods=["POST"])
 def stopconv():
@@ -76,7 +99,7 @@ def stop():
 
 @app.route("/posicion", methods=["POST"])
 def get_posicion():
-    print(f"DEBUG enviando posicioon actual -> {robot.posicion}")
+    print(f"DEBUG enviando posicion actual -> {robot.posicion}")
     p = robot.posicion
     try:
         return jsonify({
@@ -198,5 +221,16 @@ def close_gripper():
     threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": "Pinza cerrando"})
 
+@app.route('/insertaenlog', methods=["POST"])
+def recibir_log():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "JSON vacío"}), 400
+    
+    cola.put(data)
+    return jsonify({"status": "encolado"}), 202
+
 if __name__ == "__main__":
+    threading.Thread(target=worker, daemon=True).start()
     app.run(host="127.0.0.1", port=5000, debug=False)

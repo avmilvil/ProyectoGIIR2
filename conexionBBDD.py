@@ -1,10 +1,12 @@
 import oracledb
+user = "vgarled"
+passwd = "vgarled"
 
-def conectar(usuario, password):
+def conectar():
     try:
         conexion = oracledb.connect(
-            user = usuario,
-            password = password,
+            user = user,
+            password = passwd,
             dsn = "oralabos.dsic.upv.es/labora.dsic.upv.es"
         )
         print("Conectado con éxito")
