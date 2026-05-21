@@ -230,6 +230,41 @@ def recibir_log():
     
     cola.put(data)
     return jsonify({"status": "encolado"}), 202
+@app.route("/movimientos", methods=["GET"])
+def ver_movimientos():
+    conexion = robot.conexion
+    try:
+        movimientos = robot.obtener_movimientos(conexion)
+        return jsonify({"status": "ok", "movimientos": movimientos})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/robots", methods=["GET"])
+def ver_robots():
+    conexion = robot.conexion
+    try:
+        robots = robot.obtener_robots(conexion)
+        return jsonify({"status": "ok", "robots": robots})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/cintas", methods=["GET"])
+def ver_cintas():
+    conexion = robot.conexion
+    try:
+        cintas = robot.obtener_cintas(conexion)
+        return jsonify({"status": "ok", "cintas": cintas})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/sensores_db", methods=["GET"])
+def ver_sensores_db():
+    conexion = robot.conexion
+    try:
+        sensores = robot.obtener_sensores(conexion)
+        return jsonify({"status": "ok", "sensores": sensores})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     threading.Thread(target=worker, daemon=True).start()

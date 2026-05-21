@@ -1,6 +1,8 @@
 import time
 from pyniryo import *
 import requests
+from conexionBBDD import *
+
 URL = "http://127.0.0.1:5000/insertaenlog"
 
 def enviar_log(instruccion, elemento):
@@ -12,10 +14,16 @@ def enviar_log(instruccion, elemento):
         return False
     
 #Configuración de la base de datos
-#usar_database = True
+usar_database = True
+user = "vgarled"
+password = "vgarled"
 
-#if usar_database:
-#    conexion = conectar(user, password)
+if usar_database:
+    print("=== INTENTANDO CONECTAR A ORACLE ===")
+    conexion = conectar(user, password)
+    print(f"=== CONEXION RESULTADO: {conexion} ===")
+else:
+    conexion = None
 
 robot = NiryoRobot("127.0.0.1")
 sensor1 = "DI5"
@@ -64,6 +72,8 @@ def inicializar_robot():
         
         enviar_log("Robot actualizando herramienta", "Sistema")
         print("Robot listo.")
+        if conexion:
+            insertar_robot(conexion, "Niryo", "Niryo", 1)
     except Exception as e:
         print(f"Error en calibración: {e}")
     #robot.calibrate_auto()
@@ -74,10 +84,15 @@ def run_conv(velocidad=50):
     if conveyor_id:
         robot.run_conveyor(conveyor_id, speed=velocidad, direction=ConveyorDirection.FORWARD)
         enviar_log(f"Corriendo Cinta al {velocidad}%", "Cinta")
+        if conexion:
+            insertar_cinta(conexion, "FORWARD", velocidad, 1)
         
 def stop_conv():
-    robot.stop_conveyor(conveyor_id)
+    if conveyor_id:
+        robot.stop_conveyor(conveyor_id)
     enviar_log("Cinta Detenida", "Cinta")
+    if conexion:
+        insertar_cinta(conexion, "STOP", 0, 0)
 
 def move_home():
     global posicion
@@ -109,20 +124,22 @@ def actualizar_posicion(pose_object):
             "pitch": pose_object.pitch, 
             "yaw": pose_object.yaw
         }
+        if conexion:
+            insertar_movimiento(conexion, pose_object.x, pose_object.y, pose_object.z, pose_object.pitch, pose_object.roll, pose_object.yaw)
     except Exception as e:
         print(f"No se pudo actualizar la posición: {e}")
     
-# def close_DB():
-#     global usar_database, conexion
+def close_DB():
+    global usar_database, conexion
 
-#     if usar_database and conexion is not None:
-#         try:
-#             desconectar(conexion)
-#         except Exception as e:
-#             print(f"Error al intentar cerrar la BD: {e}")
-#         finally:
-#             usar_database = False
-#             conexion = None
+    if usar_database and conexion is not None:
+        try:
+            desconectar(conexion)
+        except Exception as e:
+            print(f"Error al intentar cerrar la BD: {e}")
+        finally:
+            usar_database = False
+            conexion = None
 
 def main():
     inicializar_robot()
@@ -198,6 +215,8 @@ def main():
         robot.run_conveyor(conveyor_id, speed=50, direction=ConveyorDirection.FORWARD)
         #Guarda en la BBDD
         enviar_log("Corriendo cinta después de soltar pieza", "Cinta")
+        if conexion:
+            insertar_cinta(conexion, "FORWARD", 50, 1)
  
         while True:
             if stop_requested:
@@ -206,10 +225,14 @@ def main():
             s2 = robot.digital_read(sensor2)
  
             if s1 == PinState.HIGH and s2 == PinState.LOW:
+                if conexion:
+                    insertar_sensor(conexion, 1)
                 #Para la cinta
                 robot.stop_conveyor(conveyor_id)
                 #Guarda en la BBDD
                 enviar_log("Pieza detectada en sensor 1, deteniendo cinta para paletizar", "Cinta")
+                if conexion:
+                    insertar_cinta(conexion, "STOP", 0, 0)
                 robot.wait(0.1)
  
                 #Se mueve a atacar1
@@ -253,21 +276,29 @@ def main():
                 break
  
             if s2 == PinState.LOW and s1 == PinState.LOW:
+                if conexion:
+                    insertar_sensor(conexion, 1)
                 #Para la cinta
                 robot.stop_conveyor(conveyor_id)
                 #Guarda en la BBDD
                 enviar_log("Pieza detectada en sensor 2", "Sensor 2")
+                if conexion:
+                    insertar_cinta(conexion, "STOP", 0, 0)
  
                 #Corre la cinta hacia atrás
                 robot.run_conveyor(conveyor_id, speed=50, direction=ConveyorDirection.BACKWARD)
                 #Guarda en la BBDD
                 enviar_log("Revirtiendo cinta para desechar pieza", "Cinta")
+                if conexion:
+                    insertar_cinta(conexion, "BACKWARD", 50, 1)
  
                 robot.wait(15)
  
                 #Para la cinta
                 robot.stop_conveyor(conveyor_id)
                 enviar_log("Deteniendo cinta después de desechar pieza", "Cinta")
+                if conexion:
+                    insertar_cinta(conexion, "STOP", 0, 0)
                 break
  
             robot.wait(0.02)
