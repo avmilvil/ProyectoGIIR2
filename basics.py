@@ -16,6 +16,7 @@ inicio = PoseObject(x=0.140, y=0.000, z=0.203, roll=0.003, pitch=0.757, yaw=-0.0
 subir_abierto = PoseObject(x=0.155, y=-0.009, z=0.327, roll=0.460, pitch=1.505, yaw=0.547)
 bajar1 = PoseObject(x=0.226, y=-0.194, z=0.221, roll=-3.037, pitch=1.344, yaw=-2.859)
 bajar1_2 = PoseObject(x=0.221, y=-0.197, z=0.169, roll=3.087, pitch=1.312, yaw=3.131)
+#bajar1_2 = PoseObject(x=0.205598, y=-193.400, z=96.275, roll=3.047, pitch=1.255, yaw=-3.141)
 #close gripper
 #robot.grasp_with_tool()
 subir_cerrado1 = PoseObject(x=0.165, y=-0.146, z=0.355, roll=-0.291, pitch=1.088, yaw=-0.548)

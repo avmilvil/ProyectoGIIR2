@@ -25,29 +25,43 @@ if usar_database:
 else:
     conexion = None
 
-robot = NiryoRobot("127.0.0.1")
+robot = NiryoRobot("172.16.190.27")
 sensor1 = "DI5"
 sensor2 = "DI1"
 conveyor_id = robot.set_conveyor()
 paletizadas = 0
+desechos = 0
 stop_requested = False
+
+def PoseMM(x, y, z, roll, pitch, yaw):
+    return PoseObject(x/1000, y/1000, z/1000, roll, pitch, yaw)
 
 inicio = PoseObject(x=0.140, y=0.000, z=0.203, roll=0.003, pitch=0.757, yaw=-0.001)
 subir_abierto = PoseObject(x=0.155, y=-0.009, z=0.327, roll=0.460, pitch=1.505, yaw=0.547)
 bajar1 = PoseObject(x=0.226, y=-0.194, z=0.221, roll=-3.037, pitch=1.344, yaw=-2.859)
-bajar1_2 = PoseObject(x=0.221, y=-0.197, z=0.169, roll=3.087, pitch=1.312, yaw=3.131)
+#bajar1_2 = PoseObject(x=0.221, y=-0.197, z=0.169, roll=3.087, pitch=1.312, yaw=3.131)
+bajar1_2 = PoseMM(x=205.598, y=-193.400, z=96.275, roll=3.047, pitch=1.255, yaw=-3.141)
+#bajar_poquito = PoseMM(x=198.594, y=-191.827, z=84.534, roll=2.963, pitch=1.108, yaw=3.004)
+bajar_poquito = PoseMM(x=199.920, y=-195, z=83.380, roll=2.976, pitch=1.161, yaw=3.066)
 #close gripper
-#robot.grasp_with_tool()
-subir_cerrado1 = PoseObject(x=0.165, y=-0.146, z=0.355, roll=-0.291, pitch=1.088, yaw=-0.548)
-bajar1_3 = PoseObject(x=0.278, y=-0.212, z=0.186, roll=0.481, pitch=1.406, yaw=0.547)
+#subir_cerrado1 = PoseObject(x=0.165, y=-0.146, z=0.355, roll=-0.291, pitch=1.088, yaw=-0.548)
+subir_poquito = PoseMM(x=213.905, y=-192.829, z=142.905, roll=-2.955, pitch=1.284, yaw=-2.916)
+dejar_1 = PoseMM(x=289.367, y=-168.746, z=103.316, roll=2.908, pitch=1.455, yaw=2.922)
+#bajar1_3 = PoseObject(x=0.278, y=-0.212, z=0.186, roll=0.481, pitch=1.406, yaw=0.547)
 #open gripper
-#robot.release_with_tool()
-subir_poquito = PoseObject(x=0.277, y=-0.198, z=0.213, roll=-0.647, pitch=1.481, yaw=-0.606)
+subir_poquito_after_dejar = PoseObject(x=0.277, y=-0.198, z=0.213, roll=-0.647, pitch=1.481, yaw=-0.606)
 atacar1 = PoseObject(x=0.287, y=0.135, z=0.174, roll=2.765, pitch=1.471, yaw=2.727)
-atacar_abajo1 = PoseObject(x=0.288, y=0.136, z=0.156, roll=2.762, pitch=1.476, yaw=2.698)
-subir_ataque = PoseObject(x=0.216, y=0.219, z=0.316, roll=-1.533, pitch=1.513, yaw=-0.612)
-bajar_ataque1 = PoseObject(x=0.076, y=0.227, z=0.157, roll=2.622, pitch=1.534, yaw=-2.155)
-subir_final_ataque1 = PoseObject(x=0.100, y=0.206, z=0.282, roll=0.239, pitch=1.522, yaw=1.409)
+#atacar_abajo1 = PoseObject(x=0.288, y=0.136, z=0.156, roll=2.762, pitch=1.476, yaw=2.698)
+atacar_abajo1 = PoseMM(x=282.881, y=139.216, z=66.682, roll=3.097, pitch=1.363, yaw=3.016)
+#subir_ataque = PoseObject(x=0.216, y=0.219, z=0.316, roll=-1.533, pitch=1.513, yaw=-0.612)
+subir_ataque1 = PoseMM(x=252.651, y=128.163, z=178.479, roll=2.858, pitch=1.446, yaw=2.951)
+#bajar_ataque1 = PoseObject(x=0.076, y=0.227, z=0.157, roll=2.622, pitch=1.534, yaw=-2.155)
+dejar_pieza1 = PoseMM(x=4.733, y=225.610, z=66.850, roll=-1.523, pitch=1.532, yaw=-0.124)
+dejar_pieza2 = PoseMM(x=65.194, y=226.558, z=65.278, roll=-2.309, pitch=1.534, yaw=-0.772)
+dejar_pieza3 = PoseMM(x=59.064, y=153.231, z=64.452, roll=-1.881, pitch=1.493, yaw=-0.407)
+dejar_pieza4 = PoseMM(x=2.416, y=162.294, z=63.619, roll=2.264, pitch=1.550, yaw=-2.022)
+#subir_final_ataque1 = PoseObject(x=0.100, y=0.206, z=0.282, roll=0.239, pitch=1.522, yaw=1.409)
+subir_final_pieza1 = PoseMM(x=9.420, y=166.641, z=211.837, roll=-1.051, pitch=1.477, yaw=-0.394)
 
 posicion = {
     "x": 0.0,
@@ -145,6 +159,7 @@ def main():
     inicializar_robot()
     enviar_log("Robot inicializado", "Sistema")
     global paletizadas
+    global desechos
     global stop_requested
     global posicion
  
@@ -181,22 +196,28 @@ def main():
         robot.move_pose(bajar1_2)
         actualizar_posicion(bajar1_2)
         #Guarda en la BBDD
-        enviar_log("Ejecutando agarrar pieza", "Pinza")
+        enviar_log("Bajando para agarrar pieza", "Movimiento")
+
+        #Se mueve a bajar_poquito
+        robot.move_pose(bajar_poquito)
+        actualizar_posicion(bajar_poquito)
+        #Guarda en la BBDD
+        enviar_log("Posicionando agarrar pieza", "Movimiento")
  
         #Cierra pinza
         robot.close_gripper()
         #Guarda en la BBDD
         enviar_log("Cerrando pinza para agarrar pieza", "Pinza")
  
-        #Se mueve a subir_cerrado1
-        robot.move_pose(subir_cerrado1)
-        actualizar_posicion(subir_cerrado1)
+        #Se mueve a subir_poquito
+        robot.move_pose(subir_poquito)
+        actualizar_posicion(subir_poquito)
         #Guarda en la BBDD
         enviar_log("Subiendo con pieza agarrada", "Movimiento")
  
-        #Se mueve a bajar1_3
-        robot.move_pose(bajar1_3)
-        actualizar_posicion(bajar1_3)
+        #Se mueve a dejar_1
+        robot.move_pose(dejar_1)
+        actualizar_posicion(dejar_1)
         #Guarda en la BBDD
         enviar_log("Moviendo a posición para soltar pieza en cinta", "Movimiento")
  
@@ -205,18 +226,18 @@ def main():
         #Guarda en la BBDD
         enviar_log("Abriendo pinza para soltar pieza en cinta", "Pinza")
  
-        #Se mueve a subir_poquito
-        robot.move_pose(subir_poquito)
-        actualizar_posicion(subir_poquito)
+        #Se mueve a subir_poquito_after_dejar
+        robot.move_pose(subir_poquito_after_dejar)
+        actualizar_posicion(subir_poquito_after_dejar)
         #Guarda en la BBDD
         enviar_log("Subiendo un poco después de soltar pieza en cinta", "Movimiento")
  
         #Corre la cinta
-        robot.run_conveyor(conveyor_id, speed=50, direction=ConveyorDirection.FORWARD)
+        robot.run_conveyor(conveyor_id, speed=70, direction=ConveyorDirection.FORWARD)
         #Guarda en la BBDD
         enviar_log("Corriendo cinta después de soltar pieza", "Cinta")
         if conexion:
-            insertar_cinta(conexion, "FORWARD", 50, 1)
+            insertar_cinta(conexion, "FORWARD", 70, 1)
  
         while True:
             if stop_requested:
@@ -224,7 +245,7 @@ def main():
             s1 = robot.digital_read(sensor1)
             s2 = robot.digital_read(sensor2)
  
-            if s1 == PinState.HIGH and s2 == PinState.LOW:
+            if s1 == PinState.LOW and s2 == PinState.HIGH:
                 if conexion:
                     insertar_sensor(conexion, 1)
                 #Para la cinta
@@ -252,27 +273,45 @@ def main():
                 enviar_log("Cerrando pinza para agarrar pieza para paletizar", "Pinza")
  
                 #Se mueve a subir_ataque
-                robot.move_pose(subir_ataque)
-                actualizar_posicion(subir_ataque)
+                robot.move_pose(subir_ataque1)
+                actualizar_posicion(subir_ataque1)
                 #Guarda en la BBDD
                 enviar_log("Subiendo con pieza para paletizar", "Movimiento")
- 
-                #Se mueve a bajar_ataque1
-                robot.move_pose(bajar_ataque1)
-                actualizar_posicion(bajar_ataque1)
-                #Guarda en la BBDD
-                enviar_log("Bajando con la pieza a la posición de paletizado", "Movimiento")
- 
-                #Se mueve a subir_final_ataque1
-                robot.move_pose(subir_final_ataque1)
-                actualizar_posicion(subir_final_ataque1)
-                #Guarda en la BBDD
-                enviar_log("Subiendo después de paletizar", "Movimiento")
- 
+
+                if paletizadas == 0:
+                    #Se mueve a dejar_pieza1
+                    robot.move_pose(dejar_pieza1)
+                    actualizar_posicion(dejar_pieza1)
+                    #Guarda en la BBDD
+                    enviar_log("Dejando la pieza en la posición de paletizado", "Movimiento")
+                elif paletizadas == 1 :
+                    robot.move_pose(dejar_pieza2)
+                    actualizar_posicion(dejar_pieza2)
+                    #Guarda en la BBDD
+                    enviar_log("Dejando la pieza 1 en la posición de paletizado", "Movimiento")    
+                elif paletizadas == 2 :
+                    robot.move_pose(dejar_pieza3)
+                    actualizar_posicion(dejar_pieza3)
+                    #Guarda en la BBDD
+                    enviar_log("Dejando la pieza 2 en la posición de paletizado", "Movimiento")    
+                elif paletizadas == 3:
+                    robot.move_pose(dejar_pieza4)
+                    actualizar_posicion(dejar_pieza4)
+                    #Guarda en la BBDD
+                    enviar_log("Dejando la pieza 3 en la posición de paletizado", "Movimiento")
+
                 #Abre la pinza
                 robot.open_gripper()
                 #Guarda en la BBDD
                 enviar_log("Abriendo pinza para soltar pieza paletizada", "Pinza")
+ 
+                #Se mueve a subir_final_ataque1
+                robot.move_pose(subir_final_pieza1)
+                actualizar_posicion(subir_final_pieza1)
+                #Guarda en la BBDD
+                enviar_log("Subiendo después de paletizar", "Movimiento")
+                paletizadas = paletizadas + 1
+
                 break
  
             if s2 == PinState.LOW and s1 == PinState.LOW:
@@ -286,29 +325,33 @@ def main():
                     insertar_cinta(conexion, "STOP", 0, 0)
  
                 #Corre la cinta hacia atrás
-                robot.run_conveyor(conveyor_id, speed=50, direction=ConveyorDirection.BACKWARD)
+                robot.run_conveyor(conveyor_id, speed=70, direction=ConveyorDirection.BACKWARD)
                 #Guarda en la BBDD
                 enviar_log("Revirtiendo cinta para desechar pieza", "Cinta")
                 if conexion:
-                    insertar_cinta(conexion, "BACKWARD", 50, 1)
+                    insertar_cinta(conexion, "BACKWARD", 70, 1)
  
-                robot.wait(15)
+                robot.wait(13)
  
                 #Para la cinta
                 robot.stop_conveyor(conveyor_id)
                 enviar_log("Deteniendo cinta después de desechar pieza", "Cinta")
                 if conexion:
                     insertar_cinta(conexion, "STOP", 0, 0)
+
+                desechos = desechos + 1
                 break
  
-            robot.wait(0.02)
-        paletizadas = paletizadas + 1
-    ##fin bucle     
+            #robot.wait(0.02)
+        ##fin bucle     
     ##fin bucle
     #robot.close_connection()
 
 def get_paletizadas():
+
     return paletizadas
+def get_desechos():
+    return desechos
 
 def stop_all():
     global stop_requested

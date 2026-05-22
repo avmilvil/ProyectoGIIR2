@@ -992,7 +992,7 @@
 
             texto.textContent = estado;
 
-            if (estado === "HIGH") {
+            if (estado === "LOW") {
                 indicador.className = "w-14 h-14 rounded-full transition-all duration-500 shadow-lg bg-green-500 animate-pulse";
                 card.className      = "flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-green-200 bg-green-50 transition-all duration-500 gap-3";
                 texto.className     = "text-2xl font-bold font-mono text-green-600";
@@ -1006,6 +1006,7 @@
                 desc.className      = "text-xs text-red-400 text-center font-medium";
             }
         }
+        setInterval(actualizarSensor, 3000);
 
         function iniciarAutoRefreshSensores() {
             if (intervaloSensores) clearInterval(intervaloSensores);
