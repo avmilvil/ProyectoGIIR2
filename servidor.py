@@ -34,6 +34,19 @@ def worker():
 def home():
     return render_template("web_principal.html")
 
+@app.route("/configurar_robot", methods=["POST"])
+def configurar_robot():
+    datos = request.get_json()
+    nueva_ip = datos.get("robot_ip")
+    def task():
+        with robot_lock:
+            try:
+                print(f"Iniciando conexión hacia {nueva_ip}...")
+                robot.inicializar_conexion(nueva_ip)
+            except Exception as e:
+                print(f"Error en el servidor al conectar: {str(e)}")
+    threading.Thread(target=task).start()
+    return jsonify({"status": f"Conectando a {nueva_ip}"})
 
 @app.route("/run_main", methods=["POST"])
 def run_main():
@@ -118,7 +131,14 @@ def get_posicion():
 @app.route("/paletizadas", methods=["POST"])
 def piezaspaletizadas():
     try:
-        return jsonify({"status":"ok", "piezas": robot.paletizadas})
+        return jsonify({"status":"ok", "piezas_paletizadas": robot.paletizadas})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500    
+    
+@app.route("/desechadas", methods=["POST"])
+def piezas_desechadas():
+    try:
+        return jsonify({"status":"ok", "piezas_desechadas": robot.desechos})
     except Exception as e:
         return jsonify({"error": str(e)}), 500    
 
@@ -141,7 +161,6 @@ def moverposicion():
     threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": "Moviendo posición"})
 
-
 @app.route("/disconnect_DB", methods=["POST"])
 def desconectarDB():
     def task():
@@ -149,7 +168,6 @@ def desconectarDB():
             robot.close_DB()
     threading.Thread(target=task).start()        
     return jsonify({"status":"Desconectando de la DB"})
-
 
 @app.route("/logs", methods=["GET"])
 def ver_logs():
@@ -230,6 +248,7 @@ def recibir_log():
     
     cola.put(data)
     return jsonify({"status": "encolado"}), 202
+
 @app.route("/movimientos", methods=["GET"])
 def ver_movimientos():
     conexion = robot.conexion

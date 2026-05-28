@@ -25,10 +25,10 @@ if usar_database:
 else:
     conexion = None
 
-robot = NiryoRobot("172.16.190.27")
+robot = None
 sensor1 = "DI5"
 sensor2 = "DI1"
-conveyor_id = robot.set_conveyor()
+conveyor_id = None
 paletizadas = 0
 desechos = 0
 stop_requested = False
@@ -71,6 +71,17 @@ posicion = {
     "pitch": 0.0,
     "yaw": 0.0
 }
+
+def inicializar_conexion(ip): 
+    global robot, conveyor_id
+    if robot is not None:
+        try:
+            robot.close_connection()
+        except Exception:
+            pass
+    robot = NiryoRobot(ip)
+    conveyor_id = robot.set_conveyor()
+    print(f"Robot conectado en {ip} y cinta asignada.")
 
 def inicializar_robot():
     #global conveyor_id
@@ -348,8 +359,8 @@ def main():
     #robot.close_connection()
 
 def get_paletizadas():
-
     return paletizadas
+
 def get_desechos():
     return desechos
 
