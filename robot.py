@@ -110,14 +110,14 @@ def run_conv(velocidad=50):
         robot.run_conveyor(conveyor_id, speed=velocidad, direction=ConveyorDirection.FORWARD)
         enviar_log(f"Corriendo Cinta al {velocidad}%", "Cinta")
         if conexion:
-            insertar_cinta(conexion, "FORWARD", velocidad, 1)
+            insertar_cinta(conexion, "FORWARD", velocidad, 1, 16)
         
 def stop_conv():
     if conveyor_id:
         robot.stop_conveyor(conveyor_id)
     enviar_log("Cinta Detenida", "Cinta")
     if conexion:
-        insertar_cinta(conexion, "STOP", 0, 0)
+        insertar_cinta(conexion, "STOP", 0, 0, 16)
 
 def move_home():
     global posicion
@@ -150,7 +150,7 @@ def actualizar_posicion(pose_object):
             "yaw": pose_object.yaw
         }
         if conexion:
-            insertar_movimiento(conexion, pose_object.x, pose_object.y, pose_object.z, pose_object.pitch, pose_object.roll, pose_object.yaw)
+            insertar_movimiento(conexion, pose_object.x, pose_object.y, pose_object.z, pose_object.pitch, pose_object.roll, pose_object.yaw, None)
     except Exception as e:
         print(f"No se pudo actualizar la posición: {e}")
 
@@ -284,13 +284,13 @@ def main():
     
                 if s1 == PinState.LOW and s2 == PinState.HIGH:
                     if conexion:
-                        insertar_sensor(conexion, 1)
+                        insertar_sensor(conexion, 1, 16)
                     #Para la cinta
                     robot.stop_conveyor(conveyor_id)
                     #Guarda en la BBDD
                     enviar_log("Pieza detectada en sensor 1, deteniendo cinta para paletizar", "Cinta")
                     if conexion:
-                        insertar_cinta(conexion, "STOP", 0, 0)
+                        insertar_cinta(conexion, "STOP", 0, 0, 16)
                     robot.wait(0.1)
     
                     #Se mueve a atacar1
@@ -356,20 +356,20 @@ def main():
     
                 if s2 == PinState.LOW and s1 == PinState.LOW:
                     if conexion:
-                        insertar_sensor(conexion, 1)
+                        insertar_sensor(conexion, 1, 16)
                     #Para la cinta
                     robot.stop_conveyor(conveyor_id)
                     #Guarda en la BBDD
                     enviar_log("Pieza detectada en sensor 2", "Sensor 2")
                     if conexion:
-                        insertar_cinta(conexion, "STOP", 0, 0)
+                        insertar_cinta(conexion, "STOP", 0, 0, 16)
     
                     #Corre la cinta hacia atrás
                     robot.run_conveyor(conveyor_id, speed=70, direction=ConveyorDirection.BACKWARD)
                     #Guarda en la BBDD
                     enviar_log("Revirtiendo cinta para desechar pieza", "Cinta")
                     if conexion:
-                        insertar_cinta(conexion, "BACKWARD", 70, 1)
+                        insertar_cinta(conexion, "BACKWARD", 70, 1, 16)
     
                     robot.wait(13)
     
@@ -377,7 +377,7 @@ def main():
                     robot.stop_conveyor(conveyor_id)
                     enviar_log("Deteniendo cinta después de desechar pieza", "Cinta")
                     if conexion:
-                        insertar_cinta(conexion, "STOP", 0, 0)
+                        insertar_cinta(conexion, "STOP", 0, 0, 16)
 
                     desechos = desechos + 1
                     break

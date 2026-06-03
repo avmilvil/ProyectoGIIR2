@@ -89,12 +89,12 @@ def desconectar(conexion):
 #  TABLA: log
 # =====================================================================
 
-def insertar_log(conexion, instruccion, tipo="Info"):
+def insertar_log(conexion, instruccion, tipo="Info", robot_id=16):
     try:
         cursor = conexion.cursor()
-        sql = "INSERT INTO log(instruccion, tipo) VALUES (:1, :2)"
+        sql = "INSERT INTO log(instruccion, tipo, robot_id) VALUES (:1, :2, :3)"
 
-        cursor.execute(sql, [instruccion, tipo])
+        cursor.execute(sql, [instruccion, tipo, robot_id])
 
         conexion.commit()
         cursor.close()
@@ -143,13 +143,13 @@ def eliminar_logs(conexion):
 #  TABLA: Movimiento
 # =====================================================================
 
-def insertar_movimiento(conexion, x, y, z, pitch, roll, yaw):
+def insertar_movimiento(conexion, x, y, z, pitch, roll, yaw, log_id):
     """Inserta un registro de movimiento con las coordenadas y rotaciones."""
     try:
         cursor = conexion.cursor()
-        sql = """INSERT INTO Movimiento(x, y, z, pitch, roll, yaw)
-                 VALUES (:1, :2, :3, :4, :5, :6)"""
-        cursor.execute(sql, [x, y, z, pitch, roll, yaw])
+        sql = """INSERT INTO Movimiento(x, y, z, pitch, roll, yaw, log_id)
+                 VALUES (:1, :2, :3, :4, :5, :6, :7)"""
+        cursor.execute(sql, [x, y, z, pitch, roll, yaw, log_id])
         conexion.commit()
         cursor.close()
     except Exception as e:
@@ -159,7 +159,7 @@ def obtener_movimientos(conexion):
     """Devuelve todos los registros de movimiento ordenados por id descendente."""
     try:
         cursor = conexion.cursor()
-        sql = "SELECT id, x, y, z, pitch, roll, yaw FROM Movimiento ORDER BY id DESC"
+        sql = "SELECT id, x, y, z, pitch, roll, yaw, log_id FROM Movimiento ORDER BY id DESC"
         cursor.execute(sql)
         resultados = cursor.fetchall()
         cursor.close()
@@ -172,7 +172,7 @@ def obtener_ultimo_movimiento(conexion):
     """Devuelve el último registro de movimiento."""
     try:
         cursor = conexion.cursor()
-        sql = """SELECT id, x, y, z, pitch, roll, yaw FROM Movimiento
+        sql = """SELECT id, x, y, z, pitch, roll, yaw, log_id FROM Movimiento
                  ORDER BY id DESC FETCH FIRST 1 ROWS ONLY"""
         cursor.execute(sql)
         resultado = cursor.fetchone()
@@ -261,13 +261,13 @@ def eliminar_robot(conexion, robot_id):
 #  TABLA: Cinta
 # =====================================================================
 
-def insertar_cinta(conexion, direccion, velocidad, estado):
+def insertar_cinta(conexion, direccion, velocidad, estado, robot_id):
     """Inserta un registro de cinta. estado: 1 = activa, 0 = parada."""
     try:
         cursor = conexion.cursor()
-        sql = """INSERT INTO Cinta(direccion, velocidad, estado)
-                 VALUES (:1, :2, :3)"""
-        cursor.execute(sql, [direccion, velocidad, int(estado)])
+        sql = """INSERT INTO Cinta(direccion, velocidad, estado, robot_id)
+                 VALUES (:1, :2, :3, :4)"""
+        cursor.execute(sql, [direccion, velocidad, int(estado), robot_id])
         conexion.commit()
         cursor.close()
     except Exception as e:
@@ -277,7 +277,7 @@ def obtener_cintas(conexion):
     """Devuelve todos los registros de cinta."""
     try:
         cursor = conexion.cursor()
-        sql = "SELECT id, direccion, velocidad, estado FROM Cinta ORDER BY id"
+        sql = "SELECT id, direccion, velocidad, estado, robot_id FROM Cinta ORDER BY id"
         cursor.execute(sql)
         resultados = cursor.fetchall()
         cursor.close()
@@ -290,7 +290,7 @@ def obtener_cinta_por_id(conexion, cinta_id):
     """Devuelve una cinta por su id."""
     try:
         cursor = conexion.cursor()
-        sql = "SELECT id, direccion, velocidad, estado FROM Cinta WHERE id = :1"
+        sql = "SELECT id, direccion, velocidad, estado, robot_id FROM Cinta WHERE id = :1"
         cursor.execute(sql, [cinta_id])
         resultado = cursor.fetchone()
         cursor.close()
@@ -337,12 +337,12 @@ def eliminar_cinta(conexion, cinta_id):
 #  TABLA: Sensores
 # =====================================================================
 
-def insertar_sensor(conexion, estado):
+def insertar_sensor(conexion, estado, robot_id):
     """Inserta un nuevo sensor. estado: 1 = activo, 0 = inactivo."""
     try:
         cursor = conexion.cursor()
-        sql = "INSERT INTO Sensores(estado) VALUES (:1)"
-        cursor.execute(sql, [int(estado)])
+        sql = "INSERT INTO Sensores(estado, robot_id) VALUES (:1, :2)"
+        cursor.execute(sql, [int(estado), robot_id])
         conexion.commit()
         cursor.close()
     except Exception as e:
@@ -352,7 +352,7 @@ def obtener_sensores(conexion):
     """Devuelve todos los sensores registrados."""
     try:
         cursor = conexion.cursor()
-        sql = "SELECT id, estado FROM Sensores ORDER BY id"
+        sql = "SELECT id, estado, robot_id FROM Sensores ORDER BY id"
         cursor.execute(sql)
         resultados = cursor.fetchall()
         cursor.close()
@@ -365,7 +365,7 @@ def obtener_sensor_por_id(conexion, sensor_id):
     """Devuelve un sensor por su id."""
     try:
         cursor = conexion.cursor()
-        sql = "SELECT id, estado FROM Sensores WHERE id = :1"
+        sql = "SELECT id, estado, robot_id FROM Sensores WHERE id = :1"
         cursor.execute(sql, [sensor_id])
         resultado = cursor.fetchone()
         cursor.close()
