@@ -183,25 +183,47 @@ def ver_logs():
     return jsonify({"status": "ok", "logs": logs})
     
 @app.route("/sensores", methods=["GET"])
-def leer_sensores():
-    try:
-        adquirido = robot_lock.acquire(timeout=3)
-        if not adquirido:
-            return jsonify({"status": "error",
-                            "mensaje": "Robot ocupado, reintenta en un momento"}), 503
-        try:
-            s1 = robot.robot.digital_read(robot.sensor1)
-            s2 = robot.robot.digital_read(robot.sensor2)
-        finally:
-            robot_lock.release()
- 
+def leer_sensores(): 
+    if robot.robot is None:
+        return jsonify({"status": "ok", "sensor1": "HIGH", "sensor2": "HIGH"})
+
+    if robot.esta_ejecutando_ciclo():
+        print("leyendo de la variable")
         return jsonify({
-            "status":  "ok",
-            "sensor1": "HIGH" if s1 == PinState.HIGH else "LOW",
-            "sensor2": "HIGH" if s2 == PinState.HIGH else "LOW",
+            "status": "ok",
+            "sensor1": robot.estado_sensores.get("sensor1", "HIGH"),
+            "sensor2": robot.estado_sensores.get("sensor2", "HIGH")
         })
-    except Exception as e:
-        return jsonify({"status": "error", "mensaje": str(e)}), 500
+    else:
+        with robot_lock:
+            datos = robot.leer_sensores_robot()
+        print("ejecutando la funcion leer_sensores_robot")
+        return jsonify({
+            "status": "ok",
+            "sensor1": datos["sensor1"],
+            "sensor2": datos["sensor2"]
+        })
+    
+# @app.route("/sensores", methods=["GET"])
+# def leer_sensores():
+#     try:
+#         adquirido = robot_lock.acquire(timeout=3)
+#         if not adquirido:
+#             return jsonify({"status": "error",
+#                             "mensaje": "Robot ocupado, reintenta en un momento"}), 503
+#         try:
+#             s1 = robot.robot.digital_read(robot.sensor1)
+#             s2 = robot.robot.digital_read(robot.sensor2)
+#         finally:
+#             robot_lock.release()
+ 
+#         return jsonify({
+#             "status":  "ok",
+#             "sensor1": "HIGH" if s1 == PinState.HIGH else "LOW",
+#             "sensor2": "HIGH" if s2 == PinState.HIGH else "LOW",
+#         })
+#     except Exception as e:
+#         return jsonify({"status": "error", "mensaje": str(e)}), 500
 
 @app.route("/open_gripper", methods=["POST"])
 def open_gripper():

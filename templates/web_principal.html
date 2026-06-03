@@ -146,12 +146,6 @@
             </div>
             <nav class="flex-1 px-3 space-y-1">
                 <!-- Active Tab: Control -->
-                <a id="homeBtn"
-                    class="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all font-['Inter'] text-xs font-medium uppercase tracking-wider"
-                    href="javascript:void(0)">
-                    <span class="material-symbols-outlined" data-icon="home">home</span>
-                    <span>Home</span>
-                </a>
                 <a class="flex items-center gap-3 px-3 py-3 rounded-lg text-blue-600 dark:text-blue-400 border-r-2 border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-800 transition-all font-['Inter'] text-xs font-medium uppercase tracking-wider"
                     href="#">
                     <span class="material-symbols-outlined"
@@ -236,12 +230,6 @@
                                 class="w-12 h-12 rounded-full bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl flex items-center justify-center text-on-surface hover:bg-white transition-colors">
                                 <span class="material-symbols-outlined" data-icon="videocam">videocam</span>
                             </button>
-                            <!-- <a id="homeBtn"
-                                class="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all font-['Inter'] text-xs font-medium uppercase tracking-wider"
-                                href="javascript:void(0)">
-                                <span class="material-symbols-outlined" data-icon="home">home</span>
-                                <span>Home</span>
-                            </a> -->
                         </div>
                         <div
                             class="absolute top-6 left-6 bg-white/70 backdrop-blur-xl px-4 py-2 rounded-full flex items-center gap-2 border border-white/40 shadow-sm">
@@ -389,34 +377,50 @@
                                 <h3 class="text-on-surface font-headline font-semibold text-lg">Mover a posición</h3>
                             </div>
                             <!--<span class="text-6xl font-headline font-extrabold tracking-tighter text-on-surface">1,284</span>-->
-                            <div id="mover-posicion" class="flex flex-col p-6 bg-white shadow rounded-lg mt-4 gap-8">
-                                <div class="flex justify-evenly items-center">
-                                    <label for="X" class="font-bold">X</label>
-                                    <input type="number" id="x" placeholder="X" min="0.1" max="0.4" step="0.01"
-                                        value="0.2">
-                                    <label for="Y" class="font-bold">Y</label>
-                                    <input type="number" id="y" placeholder="Y" min="0.1" max="0.4" step="0.01"
-                                        value="0.2">
-                                    <label for="Z" class="font-bold">Z</label>
-                                    <input type="number" id="z" placeholder="Z" min="0.1" max="0.4" step="0.01"
-                                        value="0.2">
-                                    <label for="Roll" class="font-bold">Roll</label>
-                                    <input type="number" id="roll" placeholder="Roll" min="0.1" max="0.4" step="0.01"
-                                        value="0.2">
-                                    <label for="Pitch" class="font-bold">Pitch</label>
-                                    <input type="number" id="pitch" placeholder="Pitch" min="0.1" max="0.4" step="0.01"
-                                        value="0.2">
-                                    <label for="Yaw" class="font-bold">Yaw</label>
-                                    <input type="number" id="yaw" placeholder="Yaw" min="0.1" max="0.4" step="0.01"
-                                        value="0.2">
-                                    <!--<div class="flex items-center gap-2 mt-2 text-primary font-medium">
-                                        <span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
-                                        <span class="text-xs">+12% from last shift</span>
-                                    </div>-->
+                            <div id="mover-posicion" class="flex flex-col p-6 bg-white shadow rounded-lg mt-4 gap-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 bg-slate-50/50 focus-within:border-blue-500 transition-colors">
+                                        <label for="x" class="font-bold text-slate-600 text-sm w-8">X</label>
+                                        <input type="number" id="x" placeholder="X" min="0.1" max="0.4" step="0.01" value="0.2"
+                                            class="w-full bg-transparent border-none outline-none text-slate-800 text-sm">
+                                    </div>
+
+                                    <div class="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 bg-slate-50/50 focus-within:border-blue-500 transition-colors">
+                                        <label for="y" class="font-bold text-slate-600 text-sm w-8">Y</label>
+                                        <input type="number" id="y" placeholder="Y" min="0.1" max="0.4" step="0.01" value="0.2"
+                                            class="w-full bg-transparent border-none outline-none text-slate-800 text-sm">
+                                    </div>
+
+                                    <div class="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 bg-slate-50/50 focus-within:border-blue-500 transition-colors">
+                                        <label for="z" class="font-bold text-slate-600 text-sm w-8">Z</label>
+                                        <input type="number" id="z" placeholder="Z" min="0.1" max="0.4" step="0.01" value="0.2"
+                                            class="w-full bg-transparent border-none outline-none text-slate-800 text-sm">
+                                    </div>
+
+                                    <div class="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 bg-slate-50/50 focus-within:border-blue-500 transition-colors">
+                                        <label for="roll" class="font-bold text-slate-600 text-sm w-8">Roll</label>
+                                        <input type="number" id="roll" placeholder="Roll" min="0.1" max="0.4" step="0.01" value="0.2"
+                                            class="w-full bg-transparent border-none outline-none text-slate-800 text-sm">
+                                    </div>
+
+                                    <div class="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 bg-slate-50/50 focus-within:border-blue-500 transition-colors">
+                                        <label for="pitch" class="font-bold text-slate-600 text-sm w-8">Pitch</label>
+                                        <input type="number" id="pitch" placeholder="Pitch" min="0.1" max="0.4" step="0.01" value="0.2"
+                                            class="w-full bg-transparent border-none outline-none text-slate-800 text-sm">
+                                    </div>
+
+                                    <div class="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 bg-slate-50/50 focus-within:border-blue-500 transition-colors">
+                                        <label for="yaw" class="font-bold text-slate-600 text-sm w-8">Yaw</label>
+                                        <input type="number" id="yaw" placeholder="Yaw" min="0.1" max="0.4" step="0.01" value="0.2"
+                                            class="w-full bg-transparent border-none outline-none text-slate-800 text-sm">
+                                    </div>
+                                    
                                 </div>
+
                                 <button type="button" id="btn-mover"
-                                    class="bg-gradient-to-br from-primary to-primary-container text-white rounded-md py-2 shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200">Mover
-                                    posición</button>
+                                    class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2.5 font-semibold shadow-lg shadow-blue-600/10 hover:scale-[1.01] active:scale-95 transition-all duration-200">
+                                    Mover posición
+                                </button>
                             </div>
                             <div>
                                 <h3 class="text-on-surface font-headline font-semibold text-lg mt-4">Posición actual
@@ -723,7 +727,7 @@
 
             fetch(`${getBaseURL()}/configurar_robot`, {
                 method: "POST",
-                header: {
+                headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
@@ -733,6 +737,7 @@
             .then(response => response.json())
             .then(data => {
                 statusDiv.innerHTML = data.status;
+                setTimeout(iniciarMonitoreoGlobal, 2000);
             })
             .catch(error => {
                 console.error("Error: ", error);
@@ -770,7 +775,9 @@
             actualizarSlider(valorVelocidad.value);
         });
 
-        window.addEventListener("load", () => actualizarSlider(50));
+        window.addEventListener("load", () => {
+            actualizarSlider(50);
+        });
 
         configBtn.addEventListener("click", () => {
             configModal.classList.remove("hidden");
@@ -781,8 +788,7 @@
         });
 
         document.getElementById("startBtn").addEventListener("click", () => {
-            statusDiv.innerHTML = "Estado: Ejecutando...";
-
+            statusDiv.innerHTML = "Ejecutando...";
             fetch(`${getBaseURL()}/run_main`, {
                 method: "POST",
                 headers: {
@@ -792,10 +798,14 @@
                     robot_ip: robotIP
                 })
             })
+            .then(response => response.json())
+            .then(data => {
+                statusDiv.innerHTML = data.status;
+            })
         });
 
         document.getElementById("stopBtn").addEventListener("click", () => {
-            statusDiv.innerHTML = "Estado: STOP presionado";
+            statusDiv.innerHTML = "STOP presionado";
             fetch(`${getBaseURL()}/stop`, {
                 method: "POST"
             })
@@ -806,7 +816,7 @@
         });
 
         document.getElementById("homeBtn").addEventListener("click", () => {
-            statusDiv.innerHTML = "Estado: HOME presionado";
+            statusDiv.innerHTML = "HOME presionado";
             fetch(`${getBaseURL()}/home`, {
                 method: "POST",
                 headers: {
@@ -842,7 +852,7 @@
                 })
         });
 
-        function actualizarPiezasPalerizadas() {
+        function actualizarPiezasPaletizadas() {
             fetch(`${getBaseURL()}/paletizadas`, { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
@@ -851,7 +861,7 @@
                 })
                 .catch(err => console.error(err));
         }
-        setInterval(actualizarPiezasPaletizadas, 3000);
+        //setInterval(actualizarPiezasPaletizadas, 3000);
 
         function actualizarPiezasDesechadas() {
             fetch(`${getBaseURL()}/desechadas`, { method: 'POST' })
@@ -862,7 +872,7 @@
                 })
                 .catch(err => console.error(err));
         }
-        setInterval(actualizarPiezasDesechadas, 3000);
+        //setInterval(actualizarPiezasDesechadas, 3000);
 
         document.getElementById("btn-mover").addEventListener('click', (e) => {
             e.preventDefault();
@@ -915,7 +925,7 @@
                 })
                 .catch(err => console.error(err));
         }
-        setInterval(actualizarPosicion, 3000);
+        //setInterval(actualizarPosicion, 3000);
 
         document.getElementById("btn-desconectar").addEventListener("click", () => {
             statusDiv.innerHTML = "DB desconectado";
@@ -970,6 +980,9 @@
 
         // ── Panel Equipo ────────────────────────────────────────
         let intervaloSensores = null;
+        let intervaloPiezasPaletizadas = null; 
+        let intervaloPiezasDesechadas = null;  
+        let intervaloPosicion = null;
 
         document.getElementById("btn-equipo").addEventListener("click", (e) => {
             e.preventDefault();
@@ -1014,12 +1027,23 @@
                 desc.className      = "text-xs text-red-400 text-center font-medium";
             }
         }
-        setInterval(actualizarSensor, 3000);
+        //setInterval(actualizarSensor, 3000);
 
-        function iniciarAutoRefreshSensores() {
-            if (intervaloSensores) clearInterval(intervaloSensores);
+        function iniciarMonitoreoGlobal() {
             leerSensores();
+            actualizarPiezasPaletizadas();
+            actualizarPiezasDesechadas();
+            actualizarPosicion();
+
+            if (intervaloSensores) clearInterval(intervaloSensores);
+            if (intervaloPiezasPaletizadas) clearInterval(intervaloPiezasPaletizadas);
+            if (intervaloPiezasDesechadas) clearInterval(intervaloPiezasDesechadas);
+            if (intervaloPosicion) clearInterval(intervaloPosicion);
+
             intervaloSensores = setInterval(leerSensores, 3000);
+            intervaloPiezasPaletizadas = setInterval(actualizarPiezasPaletizadas, 3000);
+            intervaloPiezasDesechadas = setInterval(actualizarPiezasDesechadas, 3000);
+            intervaloPosicion = setInterval(actualizarPosicion, 3000);
         }
 
         document.getElementById("btn-leer-sensores").addEventListener("click", leerSensores);
@@ -1048,7 +1072,7 @@
                     ind.className = "px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-600";
                 });
         });
-        iniciarAutoRefreshSensores();
+        //iniciarAutoRefreshSensores();
     </script>
 
 </body>

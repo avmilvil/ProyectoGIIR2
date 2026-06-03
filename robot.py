@@ -15,12 +15,12 @@ def enviar_log(instruccion, elemento):
     
 #Configuración de la base de datos
 usar_database = True
-user = "vgarled"
-password = "vgarled"
+# user = "vgarled"
+# password = "vgarled"
 
 if usar_database:
     print("=== INTENTANDO CONECTAR A ORACLE ===")
-    conexion = conectar(user, password)
+    conexion = conectar()
     print(f"=== CONEXION RESULTADO: {conexion} ===")
 else:
     conexion = None
@@ -153,7 +153,23 @@ def actualizar_posicion(pose_object):
             insertar_movimiento(conexion, pose_object.x, pose_object.y, pose_object.z, pose_object.pitch, pose_object.roll, pose_object.yaw)
     except Exception as e:
         print(f"No se pudo actualizar la posición: {e}")
-    
+
+robot_ejecutando_ciclo = False
+estado_sensores = {"sensor1": "HIGH", "sensor2": "HIGH"}
+
+def leer_sensores_robot():
+    global estado_sensores
+    try:
+        s1 = robot.digital_read(sensor1)
+        s2 = robot.digital_read(sensor2)
+        estado_sensores = {
+            "sensor1": "HIGH" if s1 == PinState.HIGH else "LOW",
+            "sensor2": "HIGH" if s2 == PinState.HIGH else "LOW"
+        }
+    except Exception as e:
+        print(f"[Robot.py] Error en lectura física: {e}")
+    return estado_sensores
+
 def close_DB():
     global usar_database, conexion
 
@@ -173,196 +189,212 @@ def main():
     global desechos
     global stop_requested
     global posicion
- 
-    for i in range(4):
-        if stop_requested:
-            print("STOP solicitado, saliendo de main")
-            enviar_log("Stop Solicitado, deteniendo main", "Sistema")
-            break
- 
-        #Abre la pinza
-        robot.open_gripper()
-        #Guarda en la BBDD
-        enviar_log("Abriendo pinza para tomar pieza", "Pinza")
- 
-        #Se mueve a inicio
-        robot.move_pose(inicio)
-        actualizar_posicion(inicio)
-        #Guarda en la BBDD
-        enviar_log("Moviendo a posición inicial para tomar pieza", "Movimiento")
- 
-        #Se mueve a subir_abierto
-        robot.move_pose(subir_abierto)
-        actualizar_posicion(subir_abierto)
-        #Guarda en la BBDD
-        enviar_log("Moviendo a posición de agarre", "Movimiento")
- 
-        #Se mueve a bajar1
-        robot.move_pose(bajar1)
-        actualizar_posicion(bajar1)
-        #Guarda en la BBDD
-        enviar_log("Ejecutando bajar a pieza", "Movimiento")
- 
-        #Se mueve a bajar1_2
-        robot.move_pose(bajar1_2)
-        actualizar_posicion(bajar1_2)
-        #Guarda en la BBDD
-        enviar_log("Bajando para agarrar pieza", "Movimiento")
+    global robot_ejecutando_ciclo
 
-        #Se mueve a bajar_poquito
-        robot.move_pose(bajar_poquito)
-        actualizar_posicion(bajar_poquito)
-        #Guarda en la BBDD
-        enviar_log("Posicionando agarrar pieza", "Movimiento")
+    robot_ejecutando_ciclo = True
  
-        #Cierra pinza
-        robot.close_gripper()
-        #Guarda en la BBDD
-        enviar_log("Cerrando pinza para agarrar pieza", "Pinza")
- 
-        #Se mueve a subir_poquito
-        robot.move_pose(subir_poquito)
-        actualizar_posicion(subir_poquito)
-        #Guarda en la BBDD
-        enviar_log("Subiendo con pieza agarrada", "Movimiento")
- 
-        #Se mueve a dejar_1
-        robot.move_pose(dejar_1)
-        actualizar_posicion(dejar_1)
-        #Guarda en la BBDD
-        enviar_log("Moviendo a posición para soltar pieza en cinta", "Movimiento")
- 
-        #Abre pinza
-        robot.open_gripper()
-        #Guarda en la BBDD
-        enviar_log("Abriendo pinza para soltar pieza en cinta", "Pinza")
- 
-        #Se mueve a subir_poquito_after_dejar
-        robot.move_pose(subir_poquito_after_dejar)
-        actualizar_posicion(subir_poquito_after_dejar)
-        #Guarda en la BBDD
-        enviar_log("Subiendo un poco después de soltar pieza en cinta", "Movimiento")
- 
-        #Corre la cinta
-        robot.run_conveyor(conveyor_id, speed=70, direction=ConveyorDirection.FORWARD)
-        #Guarda en la BBDD
-        enviar_log("Corriendo cinta después de soltar pieza", "Cinta")
-        if conexion:
-            insertar_cinta(conexion, "FORWARD", 70, 1)
- 
-        while True:
+    try:
+        while paletizadas < 4:
             if stop_requested:
+                print("STOP solicitado, saliendo de main")
+                enviar_log("Stop Solicitado, deteniendo main", "Sistema")
                 break
-            s1 = robot.digital_read(sensor1)
-            s2 = robot.digital_read(sensor2)
- 
-            if s1 == PinState.LOW and s2 == PinState.HIGH:
-                if conexion:
-                    insertar_sensor(conexion, 1)
-                #Para la cinta
-                robot.stop_conveyor(conveyor_id)
-                #Guarda en la BBDD
-                enviar_log("Pieza detectada en sensor 1, deteniendo cinta para paletizar", "Cinta")
-                if conexion:
-                    insertar_cinta(conexion, "STOP", 0, 0)
-                robot.wait(0.1)
- 
-                #Se mueve a atacar1
-                robot.move_pose(atacar1)
-                actualizar_posicion(atacar1)
-                #Guarda en la BBDD
-                enviar_log("Moviendo a posición de ataque para paletizar", "Movimiento")
- 
-                #Se mueve a atacar_abajo1
-                robot.move_pose(atacar_abajo1)
-                actualizar_posicion(atacar_abajo1)
-                enviar_log("Bajando para agarrar pieza para paletizar", "Movimiento")
- 
-                #Cierra la pinza
-                robot.close_gripper()
-                #Guarda en la BBDD
-                enviar_log("Cerrando pinza para agarrar pieza para paletizar", "Pinza")
- 
-                #Se mueve a subir_ataque
-                robot.move_pose(subir_ataque1)
-                actualizar_posicion(subir_ataque1)
-                #Guarda en la BBDD
-                enviar_log("Subiendo con pieza para paletizar", "Movimiento")
+    
+            #Abre la pinza
+            robot.open_gripper()
+            #Guarda en la BBDD
+            enviar_log("Abriendo pinza para tomar pieza", "Pinza")
+    
+            #Se mueve a inicio
+            robot.move_pose(inicio)
+            actualizar_posicion(inicio)
+            #Guarda en la BBDD
+            enviar_log("Moviendo a posición inicial para tomar pieza", "Movimiento")
+    
+            #Se mueve a subir_abierto
+            robot.move_pose(subir_abierto)
+            actualizar_posicion(subir_abierto)
+            #Guarda en la BBDD
+            enviar_log("Moviendo a posición de agarre", "Movimiento")
+    
+            #Se mueve a bajar1
+            robot.move_pose(bajar1)
+            actualizar_posicion(bajar1)
+            #Guarda en la BBDD
+            enviar_log("Ejecutando bajar a pieza", "Movimiento")
+    
+            #Se mueve a bajar1_2
+            robot.move_pose(bajar1_2)
+            actualizar_posicion(bajar1_2)
+            #Guarda en la BBDD
+            enviar_log("Bajando para agarrar pieza", "Movimiento")
 
-                if paletizadas == 0:
-                    #Se mueve a dejar_pieza1
-                    robot.move_pose(dejar_pieza1)
-                    actualizar_posicion(dejar_pieza1)
-                    #Guarda en la BBDD
-                    enviar_log("Dejando la pieza en la posición de paletizado", "Movimiento")
-                elif paletizadas == 1 :
-                    robot.move_pose(dejar_pieza2)
-                    actualizar_posicion(dejar_pieza2)
-                    #Guarda en la BBDD
-                    enviar_log("Dejando la pieza 1 en la posición de paletizado", "Movimiento")    
-                elif paletizadas == 2 :
-                    robot.move_pose(dejar_pieza3)
-                    actualizar_posicion(dejar_pieza3)
-                    #Guarda en la BBDD
-                    enviar_log("Dejando la pieza 2 en la posición de paletizado", "Movimiento")    
-                elif paletizadas == 3:
-                    robot.move_pose(dejar_pieza4)
-                    actualizar_posicion(dejar_pieza4)
-                    #Guarda en la BBDD
-                    enviar_log("Dejando la pieza 3 en la posición de paletizado", "Movimiento")
+            #Se mueve a bajar_poquito
+            robot.move_pose(bajar_poquito)
+            actualizar_posicion(bajar_poquito)
+            #Guarda en la BBDD
+            enviar_log("Posicionando agarrar pieza", "Movimiento")
+    
+            #Cierra pinza
+            robot.close_gripper()
+            #Guarda en la BBDD
+            enviar_log("Cerrando pinza para agarrar pieza", "Pinza")
+    
+            #Se mueve a subir_poquito
+            robot.move_pose(subir_poquito)
+            actualizar_posicion(subir_poquito)
+            #Guarda en la BBDD
+            enviar_log("Subiendo con pieza agarrada", "Movimiento")
+    
+            #Se mueve a dejar_1
+            robot.move_pose(dejar_1)
+            actualizar_posicion(dejar_1)
+            #Guarda en la BBDD
+            enviar_log("Moviendo a posición para soltar pieza en cinta", "Movimiento")
+    
+            #Abre pinza
+            robot.open_gripper()
+            #Guarda en la BBDD
+            enviar_log("Abriendo pinza para soltar pieza en cinta", "Pinza")
+    
+            #Se mueve a subir_poquito_after_dejar
+            robot.move_pose(subir_poquito_after_dejar)
+            actualizar_posicion(subir_poquito_after_dejar)
+            #Guarda en la BBDD
+            enviar_log("Subiendo un poco después de soltar pieza en cinta", "Movimiento")
+    
+            #Corre la cinta
+            robot.run_conveyor(conveyor_id, speed=70, direction=ConveyorDirection.FORWARD)
+            #Guarda en la BBDD
+            enviar_log("Corriendo cinta después de soltar pieza", "Cinta")
+            if conexion:
+                insertar_cinta(conexion, "FORWARD", 70, 1)
+    
+            while True:
+                if stop_requested:
+                    break
+                s1 = robot.digital_read(sensor1)
+                s2 = robot.digital_read(sensor2)
 
-                #Abre la pinza
-                robot.open_gripper()
-                #Guarda en la BBDD
-                enviar_log("Abriendo pinza para soltar pieza paletizada", "Pinza")
- 
-                #Se mueve a subir_final_ataque1
-                robot.move_pose(subir_final_pieza1)
-                actualizar_posicion(subir_final_pieza1)
-                #Guarda en la BBDD
-                enviar_log("Subiendo después de paletizar", "Movimiento")
-                paletizadas = paletizadas + 1
+                global estado_sensores
+                estado_sensores = {
+                    "sensor1": "HIGH" if s1 == PinState.HIGH else "LOW",
+                    "sensor2": "HIGH" if s2 == PinState.HIGH else "LOW"
+                }
+    
+                if s1 == PinState.LOW and s2 == PinState.HIGH:
+                    if conexion:
+                        insertar_sensor(conexion, 1)
+                    #Para la cinta
+                    robot.stop_conveyor(conveyor_id)
+                    #Guarda en la BBDD
+                    enviar_log("Pieza detectada en sensor 1, deteniendo cinta para paletizar", "Cinta")
+                    if conexion:
+                        insertar_cinta(conexion, "STOP", 0, 0)
+                    robot.wait(0.1)
+    
+                    #Se mueve a atacar1
+                    robot.move_pose(atacar1)
+                    actualizar_posicion(atacar1)
+                    #Guarda en la BBDD
+                    enviar_log("Moviendo a posición de ataque para paletizar", "Movimiento")
+    
+                    #Se mueve a atacar_abajo1
+                    robot.move_pose(atacar_abajo1)
+                    actualizar_posicion(atacar_abajo1)
+                    enviar_log("Bajando para agarrar pieza para paletizar", "Movimiento")
+    
+                    #Cierra la pinza
+                    robot.close_gripper()
+                    #Guarda en la BBDD
+                    enviar_log("Cerrando pinza para agarrar pieza para paletizar", "Pinza")
+    
+                    #Se mueve a subir_ataque
+                    robot.move_pose(subir_ataque1)
+                    actualizar_posicion(subir_ataque1)
+                    #Guarda en la BBDD
+                    enviar_log("Subiendo con pieza para paletizar", "Movimiento")
 
-                break
- 
-            if s2 == PinState.LOW and s1 == PinState.LOW:
-                if conexion:
-                    insertar_sensor(conexion, 1)
-                #Para la cinta
-                robot.stop_conveyor(conveyor_id)
-                #Guarda en la BBDD
-                enviar_log("Pieza detectada en sensor 2", "Sensor 2")
-                if conexion:
-                    insertar_cinta(conexion, "STOP", 0, 0)
- 
-                #Corre la cinta hacia atrás
-                robot.run_conveyor(conveyor_id, speed=70, direction=ConveyorDirection.BACKWARD)
-                #Guarda en la BBDD
-                enviar_log("Revirtiendo cinta para desechar pieza", "Cinta")
-                if conexion:
-                    insertar_cinta(conexion, "BACKWARD", 70, 1)
- 
-                robot.wait(13)
- 
-                #Para la cinta
-                robot.stop_conveyor(conveyor_id)
-                enviar_log("Deteniendo cinta después de desechar pieza", "Cinta")
-                if conexion:
-                    insertar_cinta(conexion, "STOP", 0, 0)
+                    if paletizadas == 0:
+                        #Se mueve a dejar_pieza1
+                        robot.move_pose(dejar_pieza1)
+                        actualizar_posicion(dejar_pieza1)
+                        #Guarda en la BBDD
+                        enviar_log("Dejando la pieza en la posición de paletizado", "Movimiento")
+                    elif paletizadas == 1 :
+                        robot.move_pose(dejar_pieza2)
+                        actualizar_posicion(dejar_pieza2)
+                        #Guarda en la BBDD
+                        enviar_log("Dejando la pieza 1 en la posición de paletizado", "Movimiento")    
+                    elif paletizadas == 2 :
+                        robot.move_pose(dejar_pieza3)
+                        actualizar_posicion(dejar_pieza3)
+                        #Guarda en la BBDD
+                        enviar_log("Dejando la pieza 2 en la posición de paletizado", "Movimiento")    
+                    elif paletizadas == 3:
+                        robot.move_pose(dejar_pieza4)
+                        actualizar_posicion(dejar_pieza4)
+                        #Guarda en la BBDD
+                        enviar_log("Dejando la pieza 3 en la posición de paletizado", "Movimiento")
 
-                desechos = desechos + 1
-                break
- 
-            #robot.wait(0.02)
-        ##fin bucle     
-    ##fin bucle
-    #robot.close_connection()
+                    #Abre la pinza
+                    robot.open_gripper()
+                    #Guarda en la BBDD
+                    enviar_log("Abriendo pinza para soltar pieza paletizada", "Pinza")
+    
+                    #Se mueve a subir_final_ataque1
+                    robot.move_pose(subir_final_pieza1)
+                    actualizar_posicion(subir_final_pieza1)
+                    #Guarda en la BBDD
+                    enviar_log("Subiendo después de paletizar", "Movimiento")
+                    paletizadas = paletizadas + 1
+
+                    if paletizadas >= 4:
+                        robot.move_to_home_pose()
+                        enviar_log("Movimiendo a HOME", "Movimiento")
+                    break
+    
+                if s2 == PinState.LOW and s1 == PinState.LOW:
+                    if conexion:
+                        insertar_sensor(conexion, 1)
+                    #Para la cinta
+                    robot.stop_conveyor(conveyor_id)
+                    #Guarda en la BBDD
+                    enviar_log("Pieza detectada en sensor 2", "Sensor 2")
+                    if conexion:
+                        insertar_cinta(conexion, "STOP", 0, 0)
+    
+                    #Corre la cinta hacia atrás
+                    robot.run_conveyor(conveyor_id, speed=70, direction=ConveyorDirection.BACKWARD)
+                    #Guarda en la BBDD
+                    enviar_log("Revirtiendo cinta para desechar pieza", "Cinta")
+                    if conexion:
+                        insertar_cinta(conexion, "BACKWARD", 70, 1)
+    
+                    robot.wait(13)
+    
+                    #Para la cinta
+                    robot.stop_conveyor(conveyor_id)
+                    enviar_log("Deteniendo cinta después de desechar pieza", "Cinta")
+                    if conexion:
+                        insertar_cinta(conexion, "STOP", 0, 0)
+
+                    desechos = desechos + 1
+                    break
+            ##fin bucle while True
+        ##fin bucle while patelizadas < 4
+    finally:        
+        robot_ejecutando_ciclo = False
+        print("Ciclo terminado.")
 
 def get_paletizadas():
     return paletizadas
 
 def get_desechos():
     return desechos
+
+def esta_ejecutando_ciclo():
+    return robot_ejecutando_ciclo
 
 def stop_all():
     global stop_requested
