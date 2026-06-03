@@ -659,50 +659,40 @@
                 href="#">Terms</a>
         </div>
     </footer>
-    <div id="configModal"
-        class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-
+    <div id="configModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div class="bg-white rounded-2xl shadow-2xl p-8 w-[400px] relative">
-
-            <button id="closeConfigModal"
-                class="absolute top-4 right-4 text-slate-500 hover:text-black text-xl">
+            <button id="closeConfigModal" class="absolute top-4 right-4 text-slate-500 hover:text-black text-xl">
                 ✕
             </button>
-
             <h2 class="text-2xl font-bold mb-6">
-                Configuración Robot
+                Configuración Sistema
             </h2>
-
             <div class="flex flex-col gap-4">
                 <div>
                     <label class="block text-sm font-semibold mb-1">
                         IP del robot
                     </label>
-
-                    <input
-                    type="text"
-                    id="robot-ip"
-                    placeholder="172.16.190.27"
-                    class="w-full rounded-lg border border-slate-300 p-2">
+                    <input type="text" id="robot-ip" placeholder="172.16.190.27" class="w-full rounded-lg border border-slate-300 p-2">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-1">
-                        Puerto
+                        IP Servidor Flask
                     </label>
-
-                    <input
-                        type="number"
-                        id="server-port"
-                        placeholder="5000"
-                        class="w-full rounded-lg border border-slate-300 p-2">
+                    <input type="text" id="server-ip" placeholder="127.0.0.1" class="w-full rounded-lg border border-slate-300 p-2">
                 </div>
-                <div>
-                <button
-                    id="save-server"
-                    class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 px-2 transition-all">
-                    Guardar configuración
-                </button>
 
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        Puerto Servidor Flask
+                    </label>
+                    <input type="number" id="server-port" placeholder="5000" class="w-full rounded-lg border border-slate-300 p-2">
+                </div>
+
+                <div>
+                    <button id="save-server" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 px-4 transition-all w-full mt-2">
+                        Guardar configuración
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -720,7 +710,13 @@
 
         document.getElementById("save-server").addEventListener("click", (e) => {
             e.preventDefault();
-            const robotIP = document.getElementById("robot-ip")?.value || "172.16.190.27";
+            const nuevaRobotIP  = document.getElementById("robot-ip")?.value || "172.16.190.27";
+            const nuevaServerIP = document.getElementById("server-ip")?.value || "127.0.0.1";
+            const nuevoPuerto   = document.getElementById("server-port")?.value || "5000";
+
+            serverIP = nuevaServerIP;
+            serverPort = nuevoPuerto;
+            robotIP = nuevaRobotIP;
 
             configModal.classList.add("hidden");
             statusDiv.innerHTML = "Estableciendo conexión con el Niryo...";

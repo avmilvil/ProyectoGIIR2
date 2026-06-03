@@ -284,3 +284,6 @@ timed out)"
 2026-06-03 15:42:16;vgarled;EXITOSO
 2026-06-03 15:42:16;vgarled;EXITOSO
 2026-06-03 15:42:39;vgarled;EXITOSO
+2026-06-03 17:23:07;vgarled;"FALLIDO (Detalle: DPY-6005: cannot connect to database (CONNECTION_ID=0Aw2i4tZYAfxxGijthicNQ==).
+timed out)"
+2026-06-03 17:26:10;vgarled;EXITOSO
