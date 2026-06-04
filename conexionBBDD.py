@@ -7,8 +7,7 @@ from datetime import datetime
 
 _DIR = os.path.dirname(os.path.abspath(__file__))
 # Ruta del archivo CSV exclusivo de logins
-CSV_LOGINS_PATH = os.path.join(_DIR, "logins.csv")
-
+CSV_LOGS_PATH = os.path.join(_DIR, "logs_robot.csv")
 # Estructuras para el hilo de login asíncrono
 logins_pendientes = []
 lock_logins = threading.Lock()
@@ -33,16 +32,16 @@ def trabajo_guardar_logins(evento):
             
             if logins_a_escribir:
                 try:
-                    archivo_nuevo = not os.path.exists(CSV_LOGINS_PATH)
-                    with open(CSV_LOGINS_PATH, "a", newline="", encoding="utf-8") as f:
+                    archivo_nuevo = not os.path.exists(CSV_LOGS_PATH)
+                    with open(CSV_LOGS_PATH, "a", newline="", encoding="utf-8") as f:
                         writer = csv.writer(f, delimiter=";")
                         if archivo_nuevo:
                             # Cabecera descriptiva para el CSV de logins
-                            writer.writerow(["fecha", "usuario", "estado"])
-                        for login in logins_a_escribir:
-                            writer.writerow([login["fecha"], login["usuario"], login["estado"]])
+                            writer.writerow(["fecha", "instruccion", "tipo", "robot_id"])
+                        for log in logins_a_escribir:
+                            writer.writerow([log["fecha"], log["instruccion"], log["tipo"], log["robot_id"]])
                 except Exception as e:
-                    print("Error al escribir logins en CSV:", e)
+                    print("Error al escribir logs en CSV:", e)
             
             time.sleep(0.5)  # Breve pausa para control de recursos
 
@@ -50,16 +49,17 @@ def trabajo_guardar_logins(evento):
 hilo_escritor = threading.Thread(target=trabajo_guardar_logins, args=(evento_login,), daemon=True)
 hilo_escritor.start()
 
-def cola_login(usuario, estado):
-    """Añade un login a la cola y activa el evento para despertar al hilo."""
+def encolar_log(instruccion, tipo, robot_id):
+    """Añade un log a la cola y activa el evento para despertar al hilo."""
     fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with lock_logins:
         logins_pendientes.append({
             "fecha": fecha_actual,
-            "usuario": usuario,
-            "estado": estado
+            "instruccion": instruccion,
+            "tipo": tipo,
+            "robot_id": robot_id
         })
-    evento_login.set()  # Despertar al hilo escritor
+    evento_login.set()
 
 # =====================================================================
 #  CONEXIÓN / DESCONEXIÓN
@@ -73,11 +73,9 @@ def conectar(usuario="vgarled", password="vgarled"):
             dsn = "oralabos.dsic.upv.es/labora.dsic.upv.es"
         )
         print("Conectado con éxito")
-        cola_login(usuario, "EXITOSO")
         return conexion
     except Exception as e:
         print("Error al conectar: ", e)
-        cola_login(usuario, f"FALLIDO (Detalle: {str(e)})")
         return None
 
 def desconectar(conexion):
@@ -93,14 +91,14 @@ def insertar_log(conexion, instruccion, tipo="Info", robot_id=16):
     try:
         cursor = conexion.cursor()
         sql = "INSERT INTO log(instruccion, tipo, robot_id) VALUES (:1, :2, :3)"
-
         cursor.execute(sql, [instruccion, tipo, robot_id])
-
         conexion.commit()
         cursor.close()
 
     except Exception as e:
         print("Error al insertar log:", e)
+
+    encolar_log(instruccion, tipo, robot_id)
 
 def obtener_logs(conexion, tipo_filtro=None):
     try:
