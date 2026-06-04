@@ -112,8 +112,6 @@ def obtener_logs(conexion, tipo_filtro=None):
             
         sql += " ORDER BY id DESC"
         
-        print(f"SQL a ejecutar: {sql} con parametros: {params}")
-        
         if params:
             cursor.execute(sql, params)
         else:

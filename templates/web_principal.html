@@ -973,6 +973,12 @@
         });
 
         document.getElementById("btn-ver-log").addEventListener("click", cargarLogs);
+        
+        function autoActualizar(){
+            cargarLogs();
+            setTimeout(autoActualizar, 5000);
+        }
+        autoActualizar();
 
         // ── Panel Equipo ────────────────────────────────────────
         let intervaloSensores = null;
