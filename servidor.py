@@ -176,10 +176,10 @@ def ver_logs():
         return jsonify({"status": "error", "logs": [],
                         "mensaje": "Sin conexión a BD"})
     tipo_filtro = request.args.get("tipo")
-    print(f"--- NUEVA PETICION DE LOGS ---")
+    #print(f"--- NUEVA PETICION DE LOGS ---")
     print(f"Filtro recibido desde la web: '{tipo_filtro}'")
     logs = robot.obtener_logs(conexion, tipo_filtro)
-    print(f"Enviando {len(logs)} logs al navegador")
+    #print(f"Enviando {len(logs)} logs al navegador")
     return jsonify({"status": "ok", "logs": logs})
     
 @app.route("/sensores", methods=["GET"])
@@ -188,7 +188,6 @@ def leer_sensores():
         return jsonify({"status": "ok", "sensor1": "HIGH", "sensor2": "HIGH"})
 
     if robot.esta_ejecutando_ciclo():
-        print("leyendo de la variable")
         return jsonify({
             "status": "ok",
             "sensor1": robot.estado_sensores.get("sensor1", "HIGH"),
@@ -197,7 +196,6 @@ def leer_sensores():
     else:
         with robot_lock:
             datos = robot.leer_sensores_robot()
-        print("ejecutando la funcion leer_sensores_robot")
         return jsonify({
             "status": "ok",
             "sensor1": datos["sensor1"],
