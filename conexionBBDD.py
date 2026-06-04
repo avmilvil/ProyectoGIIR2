@@ -15,35 +15,49 @@ evento_login = threading.Event()
 
 def trabajo_guardar_logins(evento):
     """
-    Hilo daemon que espera a que haya logins pendientes mediante un Evento
-    y los añade al archivo CSV único 'logins.csv'.
+    Hilo daemon que espera a que haya logs pendientes
+    y los añade al archivo CSV (MÁS NUEVOS ARRIBA).
     """
     while True:
-        evento.wait()  # Espera a que el evento sea activado (evento.set())
+        evento.wait()  
         
         while evento.is_set():
-            logins_a_escribir = []
+            logs_a_escribir = []
             with lock_logins:
                 if logins_pendientes:
-                    logins_a_escribir = list(logins_pendientes)
+                    logs_a_escribir = list(logins_pendientes)
                     logins_pendientes.clear()
                 else:
-                    evento.clear()  # No quedan elementos, desactivamos el interruptor
+                    evento.clear() 
             
-            if logins_a_escribir:
+            if logs_a_escribir:
                 try:
-                    archivo_nuevo = not os.path.exists(CSV_LOGS_PATH)
-                    with open(CSV_LOGS_PATH, "a", newline="", encoding="utf-8") as f:
+                    lineas_antiguas = []
+                    # 1. Si el archivo ya existe, copiamos todo lo viejo (menos la cabecera)
+                    if os.path.exists(CSV_LOGS_PATH):
+                        with open(CSV_LOGS_PATH, "r", encoding="utf-8") as f:
+                            reader = csv.reader(f, delimiter=";")
+                            lineas_antiguas = list(reader)[1:] # Saltamos la cabecera
+                    
+                    # 2. Sobrescribimos el archivo entero ("w" en vez de "a")
+                    with open(CSV_LOGS_PATH, "w", newline="", encoding="utf-8") as f:
                         writer = csv.writer(f, delimiter=";")
-                        if archivo_nuevo:
-                            # Cabecera descriptiva para el CSV de logins
-                            writer.writerow(["fecha", "instruccion", "tipo", "robot_id"])
-                        for log in logins_a_escribir:
+                        
+                        # 3. Escribimos la cabecera siempre arriba
+                        writer.writerow(["fecha", "instruccion", "tipo", "robot_id"])
+                        
+                        # 4. Escribimos los logs nuevecitos justo debajo
+                        for log in logs_a_escribir:
                             writer.writerow([log["fecha"], log["instruccion"], log["tipo"], log["robot_id"]])
+                            
+                        # 5. Volcamos todo el historial viejo al final
+                        for linea in lineas_antiguas:
+                            writer.writerow(linea)
+
                 except Exception as e:
                     print("Error al escribir logs en CSV:", e)
             
-            time.sleep(0.5)  # Breve pausa para control de recursos
+            time.sleep(0.5)
 
 # Iniciamos el hilo de escritura al importar el módulo
 hilo_escritor = threading.Thread(target=trabajo_guardar_logins, args=(evento_login,), daemon=True)

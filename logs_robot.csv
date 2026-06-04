@@ -1,10 +1,6 @@
 fecha;instruccion;tipo;robot_id
-2026-06-04 17:40:01;Pinza abierta (manual);Pinza;16
-2026-06-04 17:40:04;Pinza cerrada (manual);Pinza;16
-2026-06-04 17:43:21;Pinza abierta (manual);Pinza;16
-2026-06-04 17:43:32;Moviendo a posición: x=0.2, y=0.2, z=0.2, roll=0.2, pitch=0.2, yaw=0.2;Movimiento;16
-2026-06-04 17:44:34;Pinza abierta (manual);Pinza;16
-2026-06-04 18:19:23;Corriendo Cinta al 50%;Cinta;16
-2026-06-04 18:19:32;Cinta Detenida;Cinta;16
-2026-06-04 18:19:35;Pinza cerrada (manual);Pinza;16
-2026-06-04 18:19:36;Pinza abierta (manual);Pinza;16
+2026-06-04 18:58:12;Pinza cerrada (manual);Pinza;16
+2026-06-04 18:58:09;Pinza abierta (manual);Pinza;16
+2026-06-04 18:58:07;Cinta Detenida;Cinta;16
+2026-06-04 18:58:01;Corriendo Cinta al 50%;Cinta;16
+2026-06-04 18:57:48;Moviendo a posición: x=0.2, y=0.2, z=0.2, roll=0.2, pitch=0.2, yaw=0.2;Movimiento;16
