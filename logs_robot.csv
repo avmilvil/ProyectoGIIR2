@@ -1,4 +1,186 @@
 fecha;instruccion;tipo;robot_id
+2026-06-05 09:40:20;Cinta Detenida;Cinta;16
+2026-06-05 09:40:16;Movimiendo a HOME;Movimiento;16
+2026-06-05 09:39:49;Corriendo cinta después de soltar pieza;Cinta;16
+2026-06-05 09:39:49;Stop Solicitado, deteniendo main;Sistema;16
+2026-06-05 09:39:49;Subiendo un poco después de soltar pieza en cinta;Movimiento;16
+2026-06-05 09:39:47;Abriendo pinza para soltar pieza en cinta;Pinza;16
+2026-06-05 09:39:46;Moviendo a posición para soltar pieza en cinta;Movimiento;16
+2026-06-05 09:39:44;Subiendo con pieza agarrada;Movimiento;16
+2026-06-05 09:39:43;Cerrando pinza para agarrar pieza;Pinza;16
+2026-06-05 09:39:42;Posicionando agarrar pieza;Movimiento;16
+2026-06-05 09:39:41;Bajando para agarrar pieza;Movimiento;16
+2026-06-05 09:39:39;Ejecutando bajar a pieza;Movimiento;16
+2026-06-05 09:39:36;Moviendo a posición de agarre;Movimiento;16
+2026-06-05 09:39:33;Moviendo a posición inicial para tomar pieza;Movimiento;16
+2026-06-05 09:39:28;Abriendo pinza para tomar pieza;Pinza;16
+2026-06-05 09:39:27;Subiendo después de paletizar;Movimiento;16
+2026-06-05 09:39:24;Abriendo pinza para soltar pieza paletizada;Pinza;16
+2026-06-05 09:39:23;Dejando la pieza en la posición de paletizado;Movimiento;16
+2026-06-05 09:39:21;Subiendo con pieza para paletizar;Movimiento;16
+2026-06-05 09:39:18;Cerrando pinza para agarrar pieza para paletizar;Pinza;16
+2026-06-05 09:39:17;Bajando para agarrar pieza para paletizar;Movimiento;16
+2026-06-05 09:39:16;Moviendo a posición de ataque para paletizar;Movimiento;16
+2026-06-05 09:39:13;Pieza detectada en sensor 1, deteniendo cinta para paletizar;Cinta;16
+2026-06-05 09:39:09;Corriendo cinta después de soltar pieza;Cinta;16
+2026-06-05 09:39:09;Subiendo un poco después de soltar pieza en cinta;Movimiento;16
+2026-06-05 09:39:07;Abriendo pinza para soltar pieza en cinta;Pinza;16
+2026-06-05 09:39:06;Moviendo a posición para soltar pieza en cinta;Movimiento;16
+2026-06-05 09:39:04;Subiendo con pieza agarrada;Movimiento;16
+2026-06-05 09:39:03;Cerrando pinza para agarrar pieza;Pinza;16
+2026-06-05 09:39:02;Posicionando agarrar pieza;Movimiento;16
+2026-06-05 09:39:01;Bajando para agarrar pieza;Movimiento;16
+2026-06-05 09:38:59;Ejecutando bajar a pieza;Movimiento;16
+2026-06-05 09:38:56;Moviendo a posición de agarre;Movimiento;16
+2026-06-05 09:38:53;Moviendo a posición inicial para tomar pieza;Movimiento;16
+2026-06-05 09:38:48;Abriendo pinza para tomar pieza;Pinza;16
+2026-06-05 09:38:47;Robot inicializado;Sistema;16
+2026-06-05 09:38:47;Robot actualizando herramienta;Sistema;16
+2026-06-05 09:38:46;Robot Calibrando;Sistema;16
+2026-06-05 09:37:32;Corriendo cinta después de soltar pieza;Cinta;16
+2026-06-05 09:37:32;Subiendo un poco después de soltar pieza en cinta;Movimiento;16
+2026-06-05 09:37:30;Abriendo pinza para soltar pieza en cinta;Pinza;16
+2026-06-05 09:37:29;Moviendo a posición para soltar pieza en cinta;Movimiento;16
+2026-06-05 09:37:27;Subiendo con pieza agarrada;Movimiento;16
+2026-06-05 09:37:26;Cerrando pinza para agarrar pieza;Pinza;16
+2026-06-05 09:37:25;Posicionando agarrar pieza;Movimiento;16
+2026-06-05 09:37:24;Bajando para agarrar pieza;Movimiento;16
+2026-06-05 09:37:22;Ejecutando bajar a pieza;Movimiento;16
+2026-06-05 09:37:19;Moviendo a posición de agarre;Movimiento;16
+2026-06-05 09:37:17;Moviendo a posición inicial para tomar pieza;Movimiento;16
+2026-06-05 09:37:12;Abriendo pinza para tomar pieza;Pinza;16
+2026-06-05 09:37:10;Robot inicializado;Sistema;16
+2026-06-05 09:37:10;Robot actualizando herramienta;Sistema;16
+2026-06-05 09:37:09;Robot Calibrando;Sistema;16
+2026-06-05 09:21:31;Robot inicializado;Sistema;16
+2026-06-05 09:20:29;Robot inicializado;Sistema;16
+2026-06-05 09:15:48;Robot inicializado;Sistema;16
+2026-06-05 08:44:32;Moviendo a posición de agarre;Movimiento;16
+2026-06-05 08:44:28;Moviendo a posición inicial para tomar pieza;Movimiento;16
+2026-06-05 08:44:23;Abriendo pinza para tomar pieza;Pinza;16
+2026-06-05 08:44:23;Subiendo después de paletizar;Movimiento;16
+2026-06-05 08:44:20;Abriendo pinza para soltar pieza paletizada;Pinza;16
+2026-06-05 08:44:19;Dejando la pieza 2 en la posición de paletizado;Movimiento;16
+2026-06-05 08:44:17;Subiendo con pieza para paletizar;Movimiento;16
+2026-06-05 08:44:15;Cerrando pinza para agarrar pieza para paletizar;Pinza;16
+2026-06-05 08:44:14;Bajando para agarrar pieza para paletizar;Movimiento;16
+2026-06-05 08:44:12;Moviendo a posición de ataque para paletizar;Movimiento;16
+2026-06-05 08:44:09;Pieza detectada en sensor 1, deteniendo cinta para paletizar;Cinta;16
+2026-06-05 08:44:02;Corriendo cinta después de soltar pieza;Cinta;16
+2026-06-05 08:44:02;Subiendo un poco después de soltar pieza en cinta;Movimiento;16
+2026-06-05 08:44:00;Abriendo pinza para soltar pieza en cinta;Pinza;16
+2026-06-05 08:44:00;Moviendo a posición para soltar pieza en cinta;Movimiento;16
+2026-06-05 08:43:58;Subiendo con pieza agarrada;Movimiento;16
+2026-06-05 08:43:56;Cerrando pinza para agarrar pieza;Pinza;16
+2026-06-05 08:43:55;Posicionando agarrar pieza;Movimiento;16
+2026-06-05 08:43:54;Bajando para agarrar pieza;Movimiento;16
+2026-06-05 08:43:53;Ejecutando bajar a pieza;Movimiento;16
+2026-06-05 08:43:50;Moviendo a posición de agarre;Movimiento;16
+2026-06-05 08:43:47;Moviendo a posición inicial para tomar pieza;Movimiento;16
+2026-06-05 08:43:41;Abriendo pinza para tomar pieza;Pinza;16
+2026-06-05 08:43:41;Deteniendo cinta después de desechar pieza;Cinta;16
+2026-06-05 08:43:28;Revirtiendo cinta para desechar pieza;Cinta;16
+2026-06-05 08:43:28;Pieza detectada en sensor 2;Sensor 2;16
+2026-06-05 08:43:21;Corriendo cinta después de soltar pieza;Cinta;16
+2026-06-05 08:43:21;Subiendo un poco después de soltar pieza en cinta;Movimiento;16
+2026-06-05 08:43:19;Abriendo pinza para soltar pieza en cinta;Pinza;16
+2026-06-05 08:43:18;Moviendo a posición para soltar pieza en cinta;Movimiento;16
+2026-06-05 08:43:16;Subiendo con pieza agarrada;Movimiento;16
+2026-06-05 08:43:15;Cerrando pinza para agarrar pieza;Pinza;16
+2026-06-05 08:43:14;Posicionando agarrar pieza;Movimiento;16
+2026-06-05 08:43:13;Bajando para agarrar pieza;Movimiento;16
+2026-06-05 08:43:11;Ejecutando bajar a pieza;Movimiento;16
+2026-06-05 08:43:08;Moviendo a posición de agarre;Movimiento;16
+2026-06-05 08:43:05;Moviendo a posición inicial para tomar pieza;Movimiento;16
+2026-06-05 08:43:00;Abriendo pinza para tomar pieza;Pinza;16
+2026-06-05 08:42:59;Subiendo después de paletizar;Movimiento;16
+2026-06-05 08:42:56;Abriendo pinza para soltar pieza paletizada;Pinza;16
+2026-06-05 08:42:55;Dejando la pieza 1 en la posición de paletizado;Movimiento;16
+2026-06-05 08:42:53;Subiendo con pieza para paletizar;Movimiento;16
+2026-06-05 08:42:51;Cerrando pinza para agarrar pieza para paletizar;Pinza;16
+2026-06-05 08:42:50;Bajando para agarrar pieza para paletizar;Movimiento;16
+2026-06-05 08:42:48;Moviendo a posición de ataque para paletizar;Movimiento;16
+2026-06-05 08:42:45;Pieza detectada en sensor 1, deteniendo cinta para paletizar;Cinta;16
+2026-06-05 08:42:38;Corriendo cinta después de soltar pieza;Cinta;16
+2026-06-05 08:42:38;Subiendo un poco después de soltar pieza en cinta;Movimiento;16
+2026-06-05 08:42:36;Abriendo pinza para soltar pieza en cinta;Pinza;16
+2026-06-05 08:42:35;Moviendo a posición para soltar pieza en cinta;Movimiento;16
+2026-06-05 08:42:34;Subiendo con pieza agarrada;Movimiento;16
+2026-06-05 08:42:32;Cerrando pinza para agarrar pieza;Pinza;16
+2026-06-05 08:42:31;Posicionando agarrar pieza;Movimiento;16
+2026-06-05 08:42:30;Bajando para agarrar pieza;Movimiento;16
+2026-06-05 08:42:28;Ejecutando bajar a pieza;Movimiento;16
+2026-06-05 08:42:25;Moviendo a posición de agarre;Movimiento;16
+2026-06-05 08:42:22;Moviendo a posición inicial para tomar pieza;Movimiento;16
+2026-06-05 08:42:17;Abriendo pinza para tomar pieza;Pinza;16
+2026-06-05 08:42:16;Subiendo después de paletizar;Movimiento;16
+2026-06-05 08:42:13;Abriendo pinza para soltar pieza paletizada;Pinza;16
+2026-06-05 08:42:13;Dejando la pieza en la posición de paletizado;Movimiento;16
+2026-06-05 08:42:10;Subiendo con pieza para paletizar;Movimiento;16
+2026-06-05 08:42:08;Cerrando pinza para agarrar pieza para paletizar;Pinza;16
+2026-06-05 08:42:07;Bajando para agarrar pieza para paletizar;Movimiento;16
+2026-06-05 08:42:05;Moviendo a posición de ataque para paletizar;Movimiento;16
+2026-06-05 08:42:02;Pieza detectada en sensor 1, deteniendo cinta para paletizar;Cinta;16
+2026-06-05 08:41:55;Corriendo cinta después de soltar pieza;Cinta;16
+2026-06-05 08:41:55;Subiendo un poco después de soltar pieza en cinta;Movimiento;16
+2026-06-05 08:41:53;Abriendo pinza para soltar pieza en cinta;Pinza;16
+2026-06-05 08:41:52;Moviendo a posición para soltar pieza en cinta;Movimiento;16
+2026-06-05 08:41:51;Subiendo con pieza agarrada;Movimiento;16
+2026-06-05 08:41:49;Cerrando pinza para agarrar pieza;Pinza;16
+2026-06-05 08:41:48;Posicionando agarrar pieza;Movimiento;16
+2026-06-05 08:41:47;Bajando para agarrar pieza;Movimiento;16
+2026-06-05 08:41:45;Ejecutando bajar a pieza;Movimiento;16
+2026-06-05 08:41:42;Moviendo a posición de agarre;Movimiento;16
+2026-06-05 08:41:39;Moviendo a posición inicial para tomar pieza;Movimiento;16
+2026-06-05 08:41:34;Abriendo pinza para tomar pieza;Pinza;16
+2026-06-05 08:41:34;Robot inicializado;Sistema;16
+2026-06-05 08:41:34;Robot actualizando herramienta;Sistema;16
+2026-06-05 08:41:33;Robot Calibrando;Sistema;16
+2026-06-05 08:37:31;Corriendo cinta después de soltar pieza;Cinta;16
+2026-06-05 08:37:31;Subiendo un poco después de soltar pieza en cinta;Movimiento;16
+2026-06-05 08:37:29;Abriendo pinza para soltar pieza en cinta;Pinza;16
+2026-06-05 08:37:28;Moviendo a posición para soltar pieza en cinta;Movimiento;16
+2026-06-05 08:37:26;Subiendo con pieza agarrada;Movimiento;16
+2026-06-05 08:37:25;Cerrando pinza para agarrar pieza;Pinza;16
+2026-06-05 08:37:24;Posicionando agarrar pieza;Movimiento;16
+2026-06-05 08:37:23;Bajando para agarrar pieza;Movimiento;16
+2026-06-05 08:37:21;Ejecutando bajar a pieza;Movimiento;16
+2026-06-05 08:37:18;Moviendo a posición de agarre;Movimiento;16
+2026-06-05 08:37:15;Moviendo a posición inicial para tomar pieza;Movimiento;16
+2026-06-05 08:37:10;Abriendo pinza para tomar pieza;Pinza;16
+2026-06-05 08:37:09;Robot inicializado;Sistema;16
+2026-06-05 08:37:09;Robot actualizando herramienta;Sistema;16
+2026-06-05 08:37:08;Robot Calibrando;Sistema;16
+2026-06-05 08:37:04;Pinza abierta (manual);Pinza;16
+2026-06-05 08:37:02;Pinza cerrada (manual);Pinza;16
+2026-06-05 08:37:00;Pinza abierta (manual);Pinza;16
+2026-06-05 08:36:25;Cinta Detenida;Cinta;16
+2026-06-05 08:34:43;Corriendo cinta después de soltar pieza;Cinta;16
+2026-06-05 08:34:43;Subiendo un poco después de soltar pieza en cinta;Movimiento;16
+2026-06-05 08:34:41;Abriendo pinza para soltar pieza en cinta;Pinza;16
+2026-06-05 08:34:40;Moviendo a posición para soltar pieza en cinta;Movimiento;16
+2026-06-05 08:34:39;Subiendo con pieza agarrada;Movimiento;16
+2026-06-05 08:34:37;Cerrando pinza para agarrar pieza;Pinza;16
+2026-06-05 08:34:36;Posicionando agarrar pieza;Movimiento;16
+2026-06-05 08:34:35;Bajando para agarrar pieza;Movimiento;16
+2026-06-05 08:34:33;Ejecutando bajar a pieza;Movimiento;16
+2026-06-05 08:34:30;Moviendo a posición de agarre;Movimiento;16
+2026-06-05 08:34:28;Moviendo a posición inicial para tomar pieza;Movimiento;16
+2026-06-05 08:34:22;Abriendo pinza para tomar pieza;Pinza;16
+2026-06-05 08:34:22;Robot inicializado;Sistema;16
+2026-06-05 08:34:22;Robot actualizando herramienta;Sistema;16
+2026-06-05 08:34:21;Robot Calibrando;Sistema;16
+2026-06-05 08:33:51;Pinza abierta (manual);Pinza;16
+2026-06-05 08:33:50;Pinza cerrada (manual);Pinza;16
+2026-06-05 08:33:48;Pinza abierta (manual);Pinza;16
+2026-06-05 08:33:47;Pinza cerrada (manual);Pinza;16
+2026-06-05 08:33:46;Pinza abierta (manual);Pinza;16
+2026-06-05 08:33:44;Pinza cerrada (manual);Pinza;16
+2026-06-05 08:33:42;Pinza abierta (manual);Pinza;16
+2026-06-05 08:33:07;Cinta Detenida;Cinta;16
+2026-06-05 08:33:02;Corriendo Cinta al 100%;Cinta;16
+2026-06-05 08:32:59;Cinta Detenida;Cinta;16
+2026-06-05 08:32:55;Corriendo Cinta al 50%;Cinta;16
 2026-06-04 19:15:08;Pinza cerrada (manual);Pinza;16
 2026-06-04 19:15:06;Pinza abierta (manual);Pinza;16
 2026-06-04 18:58:12;Pinza cerrada (manual);Pinza;16

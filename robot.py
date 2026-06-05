@@ -190,6 +190,7 @@ def main():
     global stop_requested
     global posicion
     global robot_ejecutando_ciclo
+    global estado_sensores
 
     robot_ejecutando_ciclo = True
  
@@ -199,7 +200,6 @@ def main():
                 print("STOP solicitado, saliendo de main")
                 enviar_log("Stop Solicitado, deteniendo main", "Sistema")
                 break
-    
             #Abre la pinza
             robot.open_gripper()
             #Guarda en la BBDD
@@ -268,7 +268,7 @@ def main():
             #Guarda en la BBDD
             enviar_log("Corriendo cinta después de soltar pieza", "Cinta")
             if conexion:
-                insertar_cinta(conexion, "FORWARD", 70, 1)
+                insertar_cinta(conexion, "FORWARD", 70, 1, 16)
     
             while True:
                 if stop_requested:
@@ -276,12 +276,11 @@ def main():
                 s1 = robot.digital_read(sensor1)
                 s2 = robot.digital_read(sensor2)
 
-                global estado_sensores
                 estado_sensores = {
                     "sensor1": "HIGH" if s1 == PinState.HIGH else "LOW",
                     "sensor2": "HIGH" if s2 == PinState.HIGH else "LOW"
                 }
-    
+
                 if s1 == PinState.LOW and s2 == PinState.HIGH:
                     if conexion:
                         insertar_sensor(conexion, 1, 16)
@@ -314,7 +313,14 @@ def main():
                     actualizar_posicion(subir_ataque1)
                     #Guarda en la BBDD
                     enviar_log("Subiendo con pieza para paletizar", "Movimiento")
+                    s1 = robot.digital_read(sensor1)
+                    s2 = robot.digital_read(sensor2)
 
+                    estado_sensores = {
+                        "sensor1": "HIGH" if s1 == PinState.HIGH else "LOW",
+                        "sensor2": "HIGH" if s2 == PinState.HIGH else "LOW"
+                    }
+                
                     if paletizadas == 0:
                         #Se mueve a dejar_pieza1
                         robot.move_pose(dejar_pieza1)
@@ -370,7 +376,15 @@ def main():
                     enviar_log("Revirtiendo cinta para desechar pieza", "Cinta")
                     if conexion:
                         insertar_cinta(conexion, "BACKWARD", 70, 1, 16)
-    
+
+                    s1 = robot.digital_read(sensor1)
+                    s2 = robot.digital_read(sensor2)
+
+                    estado_sensores = {
+                        "sensor1": "HIGH" if s1 == PinState.HIGH else "LOW",
+                        "sensor2": "HIGH" if s2 == PinState.HIGH else "LOW"
+                    }
+
                     robot.wait(13)
     
                     #Para la cinta
